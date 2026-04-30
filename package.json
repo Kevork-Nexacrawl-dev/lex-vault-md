@@ -4,7 +4,7 @@
   "description": "Convert PDFs to Markdown from the command line — supports local files and web URLs",
   "type": "module",
   "bin": {
-    "pdf2md": "./bin/cli.js"
+    "pdf2md": "bin/cli.js"
   },
   "scripts": {
     "start": "node bin/cli.js",

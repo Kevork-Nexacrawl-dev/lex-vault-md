@@ -158,6 +158,9 @@ pdf2md local ./test.pdf
 
 PRs are welcome. Open an issue first for any significant changes.
 
+Please review [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request,
+and follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all project spaces.
+
 ---
 
 ## License
