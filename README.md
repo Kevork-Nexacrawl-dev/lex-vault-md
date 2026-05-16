@@ -36,6 +36,7 @@ pdf2md web https://arxiv.org/pdf/2103.00020.pdf
 
 ### Batch convert an entire folder
 
+feature/batch-command
 ```bash
 # Convert all PDFs in a folder (output to same folder)
 pdf2md batch ./case_files/
@@ -65,6 +66,42 @@ pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
   ✖ Failed    : 1
 ```
 
+=======
+Convert every PDF in a folder with a single command:
+
+```bash
+# Convert all PDFs — output .md files to the same folder
+pdf2md batch ./documents/
+
+# Write converted files to a separate output folder
+pdf2md batch ./documents/ --output ./converted/
+
+# Control how many PDFs process in parallel (default: 3)
+pdf2md batch ./documents/ --output ./converted/ --concurrency 5
+```
+
+**Example terminal output:**
+
+```
+ℹ Found 10 PDF(s) in documents
+ℹ Output → ./converted
+
+  ✔ document-1.pdf → document-1.md  (4 page(s), 7203 chars)
+  ✔ document-2.pdf → document-2.md  (3 page(s), 5891 chars)
+  ✔ document-3.pdf → document-3.md  (2 page(s), 3142 chars)
+  ⏭ document-4.pdf — Skipped (exists)
+  ✖ document-5.pdf — encrypted PDF — skipped
+
+────────────────────────────────────────────────
+✔ Batch complete — 10 file(s) processed
+  ✔ Converted : 8
+  ⏭ Skipped   : 1  (already exists)
+  ✖ Failed    : 1
+```
+
+Batch mode is **safe to re-run** — already-converted files are skipped automatically.
+
+main
 ---
 
 ### Flags
@@ -77,20 +114,32 @@ pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
 | `web` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
 | `batch` | `--output <dir>` | `-o` | Output directory for .md files |
 | `batch` | `--concurrency <n>` | `-n` | Parallel PDFs to process (default: 3) |
-
----
+| `local` | `--output <file>` | `-o` | Custom output filename (default: same name as PDF) |
+| `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
+| `web` | `--output <file>` | `-o` | Custom output filename |
+| `web` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
+| `batch` | `--output <dir>` | `-o` | Output directory for .md files (default: same as source folder) |
+| `batch` | `--concurrency <n>` | `-n` | Number of PDFs to process in parallel (default: 3) |
 
 ### Examples
 
 ```bash
-# Save to a custom path
+# Single file — save to a custom path
 pdf2md local ./research.pdf --output ./notes/research.md
 
 # Fetch remote PDF and copy result to clipboard
 pdf2md web https://example.com/paper.pdf --clipboard
 
+
 # Batch convert entire case folder
 pdf2md batch "./case_244401336" --output "./case_244401336_md"
+=======
+# Batch convert a folder of case documents
+pdf2md batch ./case_files/ --output ./case_files_md/
+
+# Batch with higher concurrency for large folders
+pdf2md batch ./archive/ --output ./archive_md/ --concurrency 8
+
 
 # Full example with both flags
 pdf2md local ./invoice.pdf -o ./invoices/invoice.md -c
@@ -141,9 +190,12 @@ Continued content...
 - **Page separators** — each page is a clearly labeled `## Page N` section with `---` dividers
 - **Source metadata** — output header includes filename/URL and extraction timestamp
 - **Batch conversion** — convert entire folders with parallel processing and a clean summary
+
 - **Skip on exist** — batch mode skips already-converted files, safe to re-run
+=======
+- **Skip on exist** — batch mode skips already-converted files, safe to re-run at any time
 - **Colored terminal output** — chalk-powered `✔ success`, `✖ error`, `⚠ warn` messages
-- **Spinner feedback** — ora spinner shows progress during extraction
+- **Spinner feedback** — ora spinner shows live progress per file
 - **Graceful error handling** — specific messages for missing files, encrypted PDFs, 404s, timeouts
 - **Works offline** — local and batch modes require no internet connection
 
