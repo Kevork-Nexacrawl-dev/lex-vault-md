@@ -66,7 +66,6 @@ pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
   ✖ Failed    : 1
 ```
 
-=======
 Convert every PDF in a folder with a single command:
 
 ```bash
@@ -190,9 +189,7 @@ Continued content...
 - **Page separators** — each page is a clearly labeled `## Page N` section with `---` dividers
 - **Source metadata** — output header includes filename/URL and extraction timestamp
 - **Batch conversion** — convert entire folders with parallel processing and a clean summary
-
 - **Skip on exist** — batch mode skips already-converted files, safe to re-run
-=======
 - **Skip on exist** — batch mode skips already-converted files, safe to re-run at any time
 - **Colored terminal output** — chalk-powered `✔ success`, `✖ error`, `⚠ warn` messages
 - **Spinner feedback** — ora spinner shows live progress per file
