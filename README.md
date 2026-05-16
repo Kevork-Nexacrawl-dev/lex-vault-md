@@ -217,6 +217,40 @@ Continued content...
 
 ---
 
+## Troubleshooting
+
+### "bad XRef entry" errors
+
+**What it means:** The PDF has a corrupted cross-reference table, which prevents pdf-parse from reading the file structure.
+
+**Automatic repair:** If you have [Ghostscript](https://www.ghostscript.com) installed, pdf2md will **automatically repair the PDF and retry the conversion**. You'll see `[XRef repaired]` in the output when this happens:
+
+```
+✔ Extracted 12 page(s) [XRef repaired]
+```
+
+**Install Ghostscript:**
+
+```bash
+# Windows
+winget install ghostscript
+
+# macOS
+brew install ghostscript
+
+# Ubuntu / Debian
+sudo apt install ghostscript
+```
+
+**Manual fallback (no Ghostscript):**
+
+1. Open the PDF in Chrome or Edge
+2. Press `Ctrl+P` (or `Cmd+P` on Mac) → "Save as PDF"
+3. Save the repaired PDF
+4. Re-run `pdf2md` on the new file
+
+---
+
 ## Tech Stack
 
 | Package | Version | Role |

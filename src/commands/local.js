@@ -39,10 +39,11 @@ export async function localCommand(filepath, options) {
     const buffer = fs.readFileSync(resolved);
     spinner.text = 'Extracting text and detecting headings...';
 
-    const pages = await extractPDF(buffer, path.basename(resolved));
+    const { pages, wasRepaired } = await extractPDF(buffer, path.basename(resolved), resolved);
     const markdown = formatMarkdown(pages, path.basename(resolved));
 
-    spinner.succeed(`Extracted ${pages.length} page(s)`);
+    const repairSuffix = wasRepaired ? ' [XRef repaired]' : '';
+    spinner.succeed(`Extracted ${pages.length} page(s)${repairSuffix}`);
 
     // Write output file
     const outFile = options.output || deriveOutputFilename(resolved);

@@ -1,4 +1,7 @@
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
 
 /**
  * Heading detection thresholds ported from Tampermonkey scripts.
@@ -77,12 +80,38 @@ function renderPage(textItems, pageNum) {
 }
 
 /**
+ * Attempt to repair a corrupted PDF using Ghostscript.
+ * Returns the path to the repaired file.
+ * Throws if Ghostscript is not installed or repair fails.
+ */
+function repairPDFWithGhostscript(inputPath) {
+  const dir = path.dirname(inputPath);
+  const ext = path.extname(inputPath);
+  const base = path.basename(inputPath, ext);
+  const fixedPath = path.join(dir, `${base}-fixed${ext}`);
+
+  // Detect OS and choose Ghostscript command
+  const gsCmd = process.platform === 'win32' ? 'gswin64c' : 'gs';
+
+  try {
+    execSync(`${gsCmd} -o "${fixedPath}" -sDEVICE=pdfwrite "${inputPath}"`, { stdio: 'pipe' });
+    return fixedPath;
+  } catch (err) {
+    if (err.code === 'ENOENT' || err.message.includes('not found')) {
+      throw new Error('bad XRef entry — install Ghostscript for auto-repair: https://www.ghostscript.com');
+    }
+    throw new Error('bad XRef entry (Ghostscript repair failed)');
+  }
+}
+
+/**
  * Main extraction function.
  * Accepts a Buffer (from fs.readFileSync or axios response).
- * Returns the full Markdown string.
+ * Returns { pages: string[], wasRepaired: boolean }.
  */
-export async function extractPDF(buffer, source = '') {
+export async function extractPDF(buffer, source = '', filePath = null) {
   let pages = [];
+  let wasRepaired = false;
 
   // pdf-parse's `pagerender` option fires per page, giving us raw text items.
   // We collect per-page results in the array via closure.
@@ -97,7 +126,46 @@ export async function extractPDF(buffer, source = '') {
     });
   }
 
-  await pdfParse(buffer, { pagerender: pageRender });
+  try {
+    await pdfParse(buffer, { pagerender: pageRender });
+  } catch (err) {
+    // Check if this is an XRef error
+    const isXRefError = err.message && (
+      err.message.toLowerCase().includes('xref') ||
+      err.message.toLowerCase().includes('cross-reference')
+    );
+
+    if (isXRefError && filePath) {
+      // Attempt Ghostscript repair
+      let fixedPath;
+      try {
+        fixedPath = repairPDFWithGhostscript(filePath);
+        const repairedBuffer = fs.readFileSync(fixedPath);
+        
+        // Retry with repaired PDF
+        const repairedPageTexts = [];
+        function repairedPageRender(pageData) {
+          return pageData.getTextContent().then((textContent) => {
+            const rendered = renderPage(textContent.items, pageData.pageNumber);
+            repairedPageTexts[pageData.pageNumber - 1] = rendered;
+            return textContent.items.map((i) => i.str).join(' ');
+          });
+        }
+        
+        await pdfParse(repairedBuffer, { pagerender: repairedPageRender });
+        pageTexts.push(...repairedPageTexts);
+        wasRepaired = true;
+      } finally {
+        // Clean up temp file
+        if (fixedPath && fs.existsSync(fixedPath)) {
+          fs.unlinkSync(fixedPath);
+        }
+      }
+    } else {
+      // Not an XRef error or no file path available - rethrow
+      throw err;
+    }
+  }
 
   pages = pageTexts;
 
@@ -105,5 +173,5 @@ export async function extractPDF(buffer, source = '') {
     throw new Error('No text content found in PDF. The file may be scanned/image-only.');
   }
 
-  return pages;
+  return { pages, wasRepaired };
 }

@@ -89,11 +89,12 @@ async function processOne(filename, sourceDir, outDir, results, errors) {
 
   try {
     const buffer = fs.readFileSync(inputPath);
-    const pages  = await extractPDF(buffer, filename);
+    const { pages, wasRepaired } = await extractPDF(buffer, filename, inputPath);
     const markdown = formatMarkdown(pages, filename);
 
     fs.writeFileSync(outputPath, markdown, 'utf8');
-    spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${markdown.length} chars)`);
+    const repairSuffix = wasRepaired ? ' [XRef repaired]' : '';
+    spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${markdown.length} chars)${repairSuffix}`);
     results.converted++;
   } catch (err) {
     let reason = err.message;

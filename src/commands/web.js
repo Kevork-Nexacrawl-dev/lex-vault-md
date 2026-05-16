@@ -55,10 +55,11 @@ export async function webCommand(url, options) {
     const buffer = Buffer.from(response.data);
     const sourceName = deriveOutputFilename(url).replace('.md', '.pdf');
 
-    const pages = await extractPDF(buffer, url);
+    const { pages, wasRepaired } = await extractPDF(buffer, url);
     const markdown = formatMarkdown(pages, url);
 
-    spinner.succeed(`Extracted ${pages.length} page(s) from remote PDF`);
+    const repairSuffix = wasRepaired ? ' [XRef repaired]' : '';
+    spinner.succeed(`Extracted ${pages.length} page(s) from remote PDF${repairSuffix}`);
 
     // Write output file
     const outFile = options.output || deriveOutputFilename(url);
