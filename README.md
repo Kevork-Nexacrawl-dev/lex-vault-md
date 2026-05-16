@@ -132,7 +132,7 @@ pdf2md web https://example.com/paper.pdf --clipboard
 
 # Batch convert entire case folder
 pdf2md batch "./case_244401336" --output "./case_244401336_md"
-=======
+
 # Batch convert a folder of case documents
 pdf2md batch ./case_files/ --output ./case_files_md/
 
