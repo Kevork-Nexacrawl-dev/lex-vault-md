@@ -36,6 +36,37 @@ pdf2md web https://arxiv.org/pdf/2103.00020.pdf
 
 ### Batch convert an entire folder
 
+feature/batch-command
+```bash
+# Convert all PDFs in a folder (output to same folder)
+pdf2md batch ./case_files/
+
+# Convert all PDFs and write .md files to a different folder
+pdf2md batch ./case_files/ --output ./converted/
+
+# Control parallel processing (default: 3)
+pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
+```
+
+**Batch output example:**
+```
+ℹ Found 62 PDF(s) in case_244401336
+ℹ Output → ./converted
+
+ ✔ document_001.pdf → document_001.md  (3 page(s), 4821 chars)
+ ✔ document_002.pdf → document_002.md  (1 page(s), 892 chars)
+ ⏭ document_003.pdf — Skipped (exists)
+ ✖ document_004.pdf — encrypted PDF — skipped
+ ...
+
+────────────────────────────────────────────────
+✔ Batch complete — 62 file(s) processed
+  ✔ Converted : 59
+  ⏭ Skipped   : 2  (already exists)
+  ✖ Failed    : 1
+```
+
+=======
 Convert every PDF in a folder with a single command:
 
 ```bash
@@ -70,12 +101,19 @@ pdf2md batch ./documents/ --output ./converted/ --concurrency 5
 
 Batch mode is **safe to re-run** — already-converted files are skipped automatically.
 
+main
 ---
 
 ### Flags
 
 | Command | Flag | Short | Description |
 |---|---|---|---|
+| `local` | `--output <file>` | `-o` | Custom output filename |
+| `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
+| `web` | `--output <file>` | `-o` | Custom output filename |
+| `web` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
+| `batch` | `--output <dir>` | `-o` | Output directory for .md files |
+| `batch` | `--concurrency <n>` | `-n` | Parallel PDFs to process (default: 3) |
 | `local` | `--output <file>` | `-o` | Custom output filename (default: same name as PDF) |
 | `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
 | `web` | `--output <file>` | `-o` | Custom output filename |
@@ -92,11 +130,16 @@ pdf2md local ./research.pdf --output ./notes/research.md
 # Fetch remote PDF and copy result to clipboard
 pdf2md web https://example.com/paper.pdf --clipboard
 
+
+# Batch convert entire case folder
+pdf2md batch "./case_244401336" --output "./case_244401336_md"
+=======
 # Batch convert a folder of case documents
 pdf2md batch ./case_files/ --output ./case_files_md/
 
 # Batch with higher concurrency for large folders
 pdf2md batch ./archive/ --output ./archive_md/ --concurrency 8
+
 
 # Full example with both flags
 pdf2md local ./invoice.pdf -o ./invoices/invoice.md -c
@@ -147,6 +190,9 @@ Continued content...
 - **Page separators** — each page is a clearly labeled `## Page N` section with `---` dividers
 - **Source metadata** — output header includes filename/URL and extraction timestamp
 - **Batch conversion** — convert entire folders with parallel processing and a clean summary
+
+- **Skip on exist** — batch mode skips already-converted files, safe to re-run
+=======
 - **Skip on exist** — batch mode skips already-converted files, safe to re-run at any time
 - **Colored terminal output** — chalk-powered `✔ success`, `✖ error`, `⚠ warn` messages
 - **Spinner feedback** — ora spinner shows live progress per file
