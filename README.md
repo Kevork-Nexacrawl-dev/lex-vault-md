@@ -53,14 +53,14 @@ pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
 ℹ Found 62 PDF(s) in case_244401336
 ℹ Output → ./converted
 
-   ✔ document_001.pdf → document_001.md  (3 page(s), 4821 chars)
+ ✔ document_001.pdf → document_001.md  (3 page(s), 4821 chars)
  ✔ document_002.pdf → document_002.md  (1 page(s), 892 chars)
  ⏭ document_003.pdf — Skipped (exists)
  ✖ document_004.pdf — encrypted PDF — skipped
  ...
 
 ────────────────────────────────────────────────
-✔ Batch complete — 62 file(s) processed
+  ✔ Batch complete — 62 file(s) processed
   ✔ Converted : 59
   ⏭ Skipped   : 2  (already exists)
   ✖ Failed    : 1
@@ -92,7 +92,7 @@ pdf2md batch ./documents/ --output ./converted/ --concurrency 5
   ✖ document-5.pdf — encrypted PDF — skipped
 
 ────────────────────────────────────────────────
-✔ Batch complete — 10 file(s) processed
+  ✔ Batch complete — 10 file(s) processed
   ✔ Converted : 8
   ⏭ Skipped   : 1  (already exists)
   ✖ Failed    : 1
