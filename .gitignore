@@ -21,3 +21,9 @@ npm-debug.log*
 # Editor
 .vscode/
 .idea/
+
+# Private agent customizations (local only — not committed to the repo)
+.github/agents/
+
+# Private planning documents (local only — not committed to the repo)
+docs/

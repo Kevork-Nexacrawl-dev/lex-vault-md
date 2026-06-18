@@ -1,0 +1,15 @@
+# Repository settings for GitHub
+# Topics help with SEO and discoverability - these will appear on the repo's main page
+topics:
+  - pdf-to-markdown
+  - cli
+  - nodejs
+  - converter
+  - command-line
+  - nexacrawl
+  - pdf-parser
+  - heading-detection
+  - markdown
+  - developer-tools
+  - batch-processing
+  - pdf-extraction
