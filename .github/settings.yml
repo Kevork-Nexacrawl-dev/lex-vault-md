@@ -1,5 +1,5 @@
-# Repository settings for GitHub
-# Topics help with SEO and discoverability - these will appear on the repo's main page
+# Repository settings for GitHub (reference — apply via `gh repo edit` or GitHub UI)
+# About description: Lightning-fast PDF to Markdown CLI — font-size heading detection, batch mode, local & web. By Nexacrawl.
 topics:
   - pdf-to-markdown
   - cli

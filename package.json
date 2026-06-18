@@ -1,7 +1,15 @@
 {
   "name": "pdf2md-cli",
   "version": "1.0.0",
-  "description": "pdf2md-cli by Nexacrawl — Convert PDFs to Markdown from the command line. CLI tool with font-size-based heading detection, local/web/batch support.",
+  "description": "pdf2md-cli by Nexacrawl — Lightning-fast PDF to Markdown CLI. ~2s for 12MB files. Font-size heading detection, batch mode, local & web URLs.",
+  "homepage": "https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli/issues"
+  },
   "type": "module",
   "bin": {
     "pdf2md": "bin/cli.js"
@@ -21,7 +29,10 @@
     "pdf2md-cli",
     "command-line",
     "heading-detection",
-    "pdf-parser"
+    "pdf-parser",
+    "fast-pdf-converter",
+    "batch-pdf",
+    "nodejs-cli"
   ],
   "author": "Kevork <nexacrawl@gmail.com>",
   "license": "BSL-1.1",
