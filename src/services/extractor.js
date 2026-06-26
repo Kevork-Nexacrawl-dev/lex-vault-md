@@ -1,6 +1,7 @@
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import { detectColumnGutters } from '../layout/mer.js';
 import { novaLADSort } from '../layout/novlad.js';
+import { extractTables } from '../tables/orchestrator.js';
 
 // BLUEPRINT: Statistical Mode Font-Size Profiler (Block 4b)
 // Builds a frequency histogram of all font sizes for a page's text items.
@@ -20,7 +21,7 @@ function computeSBody(items) {
   return modeSize || 12;
 }
 
-// Returns the heading level (1–3) for a font size given S_body, or null if not a heading.
+// Returns the heading level (1-3) for a font size given S_body, or null if not a heading.
 // Ratios: >=1.5x H1; >=1.2x H2; >=1.05x H3; <0.8x caption (return -1)
 function detectHeadingLevel(size, S_body) {
   const r = size / S_body;
@@ -66,14 +67,16 @@ function snapToGrid(items) {
  *   Pass 2) Statistical Mode Font Profiler -- compute S_body
  *   Pass 3) Dynamic Line Height            -- compute avgLineHeight
  *   Pass 4) MER Column Detection           -- detect column gutters
- *   Pass 5) NovaLAD Reading Order          -- sort items in correct reading order
- *   Pass 6) Render loop                    -- emit Markdown
+ *   Pass 5) NovaLAD Reading Order          -- sort in correct reading order
+ *   Pass 6) Hybrid Table Extraction        -- extract tables, remove consumed items
+ *   Pass 7) Render loop                    -- emit Markdown for remaining text
  *
- * @param {object[]} textItems  - raw items from pdf-parse getTextContent()
- * @param {number}   pageWidth  - from pageData.view[2]
- * @param {number}   pageHeight - from pageData.view[3]
+ * @param {object[]} textItems   - raw items from pdf-parse getTextContent()
+ * @param {number}   pageWidth   - from pageData.view[2]
+ * @param {number}   pageHeight  - from pageData.view[3]
+ * @param {object}   operatorList- from pageData.getOperatorList()
  */
-function renderPage(textItems, pageWidth, pageHeight) {
+function renderPage(textItems, pageWidth, pageHeight, operatorList) {
   // -- Pass 1: Snap-to-Grid
   const items = snapToGrid(textItems);
 
@@ -89,36 +92,44 @@ function renderPage(textItems, pageWidth, pageHeight) {
   // -- Pass 5: NovaLAD Reading Order -- sort by column then top-to-bottom
   const ordered = novaLADSort(items, gutters);
 
-  // -- Pass 6: Render loop
+  // -- Pass 6: Hybrid Table Extraction
+  const { tableBlocks, remainingItems } = extractTables(ordered, avgLineHeight, operatorList);
+
+  // -- Pass 7: Render loop (non-table items only)
   let pageText = '';
   let lastY = null;
   let lastFontSize = null;
 
-  for (const item of ordered) {
+  // Interleave table blocks at their Y-position within the text stream.
+  // We track which tables have been injected by their maxY threshold.
+  const pendingTables = [...tableBlocks].sort((a, b) => b.maxY - a.maxY); // highest Y first
+  let tableIdx = 0;
+
+  for (const item of remainingItems) {
     const text = item.str;
     if (!text?.trim()) continue;
 
     const fontSize = Math.round(Math.abs(item.transform?.[0] ?? 12));
     const y = item.transform?.[5] ?? 0;
 
+    // Inject any pending table blocks whose maxY is above this item's Y
+    while (tableIdx < pendingTables.length && pendingTables[tableIdx].maxY >= y) {
+      if (pageText.length > 0 && !pageText.endsWith('\n')) pageText += '\n\n';
+      pageText += pendingTables[tableIdx].markdown + '\n\n';
+      tableIdx++;
+    }
+
     if (lastY !== null) {
       const yDiff = Math.abs(lastY - y);
-
-      // Dynamic Line Height Thresholding (Block 4a):
-      //   gap > 1.8x avgLineHeight -> paragraph break
-      //   gap > 1.2x avgLineHeight -> line break
       if (yDiff > avgLineHeight * 1.8) {
         pageText += '\n\n';
       } else if (yDiff > avgLineHeight * 1.2) {
         pageText += '\n';
       } else if (y === lastY && pageText.length > 0 && !pageText.endsWith(' ')) {
-        // Same line: join with space
         pageText += ' ';
       }
     }
 
-    // Statistical Mode Font-Size Profiler (Block 4b):
-    //   Emit heading prefix only when font size changes AND level is detected.
     if (fontSize !== lastFontSize) {
       const level = detectHeadingLevel(fontSize, S_body);
       if (level !== null && level > 0) {
@@ -130,6 +141,13 @@ function renderPage(textItems, pageWidth, pageHeight) {
     pageText += text;
     lastY = y;
     lastFontSize = fontSize;
+  }
+
+  // Flush any remaining table blocks (e.g. table at bottom of page)
+  while (tableIdx < pendingTables.length) {
+    if (pageText.length > 0 && !pageText.endsWith('\n')) pageText += '\n\n';
+    pageText += pendingTables[tableIdx].markdown + '\n\n';
+    tableIdx++;
   }
 
   return pageText.trim();
@@ -144,10 +162,13 @@ export async function extractPDF(buffer, source = '') {
   const pageTexts = [];
 
   function pageRender(pageData) {
-    return pageData.getTextContent().then((textContent) => {
-      // Thread pageWidth and pageHeight from pageData.view into renderPage
+    // Fetch text content and operator list in parallel
+    return Promise.all([
+      pageData.getTextContent(),
+      pageData.getOperatorList().catch(() => null), // graceful: some PDFs block operator access
+    ]).then(([textContent, operatorList]) => {
       const [, , pageWidth, pageHeight] = pageData.view ?? [0, 0, 612, 792];
-      const rendered = renderPage(textContent.items, pageWidth, pageHeight);
+      const rendered = renderPage(textContent.items, pageWidth, pageHeight, operatorList);
       pageTexts[pageData.pageNumber - 1] = rendered;
       return textContent.items.map((i) => i.str).join(' ');
     });
