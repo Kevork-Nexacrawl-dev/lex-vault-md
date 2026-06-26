@@ -1,1 +1,163 @@
-aW1wb3J0IHBkZlBhcnNlIGZyb20gJ3BkZi1wYXJzZS9saWIvcGRmLXBhcnNlLmpzJzsKCi8vIEJMVUVQUklOVDogU3RhdGlzdGljYWwgTW9kZSBGb250LVNpemUgUHJvZmlsZXIgKEJsb2NrIDRiKQovLyBCdWlsZHMgYSBmcmVxdWVuY3kgaGlzdG9ncmFtIG9mIGFsbCBmb250IHNpemVzIGZvciBhIHBhZ2UncyB0ZXh0IGl0ZW1zLgovLyBSZXR1cm5zIFNfYm9keSA9IHRoZSBtb3N0IGZyZXF1ZW50IGZvbnQgc2l6ZSAodGhlIGJhc2VsaW5lIGJvZHkgdGV4dCBzaXplKS4KLy8gTy1jb3N0OiBPKE4pIHdoZXJlIE4gPSBudW1iZXIgb2YgdGV4dCBpdGVtcyBvbiBwYWdlLgpmdW5jdGlvbiBjb21wdXRlU0JvZHkoaXRlbXMpIHsKICBjb25zdCBmcmVxID0gbmV3IE1hcCgpOwogIGZvciAoY29uc3QgaXRlbSBvZiBpdGVtcykgewogICAgaWYgKCFpdGVtLnN0cj8udHJpbSgpKSBjb250aW51ZTsKICAgIGNvbnN0IHNpemUgPSBNYXRoLnJvdW5kKE1hdGguYWJzKGl0ZW0udHJhbnNmb3JtPy5bMF0gPz8gMTIpKTsKICAgIGZyZXEuc2V0KHNpemUsIChmbHJlcS5nZXQoc2l6ZSkgPz8gMCkgKyAxKTsKICB9CiAgbGV0IG1vZGVTaXplID0gMTIsIG1vZGVDb3VudCA9IDA7CiAgZm9yIChjb25zdCBbc2l6ZSwgY291bnRdIG9mIGZyZXEpIHsKICAgIGlmIChjb3VudCA+IG1vZGVDb3VudCkgeyBtb2RlQ291bnQgPSBjb3VudDsgbW9kZVNpemUgPSBzaXplOyB9CiAgfQogIHJldHVybiBtb2RlU2l6ZSB8fCAxMjsKfQoKLy8gUmV0dXJucyB0aGUgaGVhZGluZyBsZXZlbCAoMeKAlDQpIGZvciBhIGZvbnQgc2l6ZSBnaXZlbiBTX2JvZHksIG9yIG51bGwgaWYgbm90IGEgaGVhZGluZy4KLy8gUmF0aW9zOiA+PTEuNXggSDE7ID49MS4yeCBIMjsgPj0xLjA1eCBIMzsgPDAuOHggY2FwdGlvbiAocmV0dXJuIC0xKQpmdW5jdGlvbiBkZXRlY3RIZWFkaW5nTGV2ZWwoc2l6ZSwgU19ib2R5KSB7CiAgY29uc3QgciA9IHNpemUgLyBTX2JvZHk7CiAgaWYgKHIgPj0gMS41KSByZXR1cm4gMTsKICBpZiAociA+PSAxLjIpIHJldHVybiAyOwogIGlmIChyID49IDEuMDUpIHJldHVybiAzOwogIGlmIChyIDwgMC44KSAgcmV0dXJuIC0xOyAvLyBjYXB0aW9uL2Zvb3Rub3RlOiBzdXBwcmVzcyBoZWFkaW5nIHByZWZpeAogIHJldHVybiBudWxsOwp9CgovLyBCTFVFUFJJTlQ6IER5bmFtaWMgTGluZSBIZWlnaHQgVGhyZXNob2xkaW5nIChCbG9jayA0YSkKLy8gQ29tcHV0ZXMgdGhlIG1lZGlhbiBZLWdhcCBiZXR3ZWVuIGNvbnNlY3V0aXZlIHRleHQgbGluZXMgb24gdGhpcyBwYWdlLgovLyBVc2VkIGFzIGF2Z0xpbmVIZWlnaHQgc28gcGFyYWdyYXBoIGJyZWFrcyBzY2FsZSB0byB0aGUgZG9jdW1lbnQsIG5vdCBhIGhhcmRjb2RlZCBweC4KLy8gTy1jb3N0OiBPKE4gbG9nIE4pIGZvciBzb3J0LCBPKDEpIG1lZGlhbiBsb29rdXAuCmZ1bmN0aW9uIGNvbXB1dGVBdmdMaW5lSGVpZ2h0KGl0ZW1zKSB7CiAgY29uc3QgeXMgPSBbLi4ubmV3IFNldChpdGVtcy5tYXAoaSA9PiBpLnRyYW5zZm9ybT8uWzVdID8/IDApKV0uc29ydCgoYSwgYikgPT4gYiAtIGEpOwogIGlmICh5cy5sZW5ndGggPCAyKSByZXR1cm4gMTI7CiAgY29uc3QgZ2Fwcz0gW107CiAgZm9yIChsZXQgaSA9IDE7IGkgPCB5cy5sZW5ndGg7IGkrKykgZ2Fwcy5wdXNoKHlzW2kgLSAxXSAtIHlzW2ldKTsKICBnYXBzLnNvcnQoKGEsIGIpID0+IGEgLSBiKTsKICByZXR1cm4gZ2Fwc1tNYXRoLmZsb29yKGdhcHMubGVuZ3RoIC8gMildIHx8IDEyOwp9CgovLyBCTFVFUFJJTlQ6IFNuYXAtdG8tR3JpZCAocHJlLXBhc3MpCi8vIFJvdW5kcyBhbGwgdHJhbnNmb3JtIFgvWSBjb29yZGluYXRlcyB0byBuZWFyZXN0IGludGVnZXIgaW1tZWRpYXRlbHkgYWZ0ZXIgZXh0cmFjdGlvbi4KLy8gRWxpbWluYXRlcyBmbG9hdC1kcmlmdCBidWdzIChYPTEwLjAwMSB2cyBYPTEwLjAwNCkgZm9yIGFsbCBkb3duc3RyZWFtIHNwYXRpYWwgYWxnb3JpdGhtcy4KLy8gTy1jb3N0OiBPKE4pIC0gbm8tY29zdCBwYXNzLgpmdW5jdGlvbiBzbmFwVG9HcmlkKGl0ZW1zKSB7CiAgZm9yIChjb25zdCBpdGVtIG9mIGl0ZW1zKSB7CiAgICBpZiAoaXRlbS50cmFuc2Zvcm0pIHsKICAgICAgaXRlbS50cmFuc2Zvcm1bNF0gPSBNYXRoLnJvdW5kKGl0ZW0udHJhbnNmb3JtWzRdKTsgLy8gWAogICAgICBpdGVtLnRyYW5zZm9ybVs1XSA9IE1hdGgucm91bmQoaXRlbS50cmFuc2Zvcm1bNV0pOyAvLyBZCiAgICB9CiAgfQogIHJldHVybiBpdGVtczsKfQoKLyoqCiAqIFJlbmRlciBhIHNpbmdsZSBQREYgcGFnZSdzIHRleHQgaXRlbXMgaW50byByYXcgTWFya2Rvd24gbGluZXMuCiAqCiAqIFBpcGVsaW5lIGZvciBleWFjaCBwYWdlIChpbiBvcmRlcik6CiAqICAgMSkgU25hcC10by1HcmlkICAgICAgICAgICAgICAgLS0gZWxpbWluYXRlIGZsb2F0IGRyaWZ0CiAqICAgMikgU3RhdGlzdGljYWwgTW9kZSBGb250IFByb2ZpbGVyIC0tIGNvbXB1dGUgU19ib2R5CiAqICAgMykgRHluYW1pYyBMaW5lIEhlaWdodCAgICAgICAtLSBjb21wdXRlIGF2Z0xpbmVIZWlnaHQKICogICA0KSBZLXNVCXJ0ICsgcmVuZGVyIGxvb3AgICAgICAtLSBlbWl0IE1hcmtkb3duCiAqLwpmdW5jdGlvbiByZW5kZXJQYWdlKHRleHRJdGVtcykgewogIC8vIC0tIFBhc3MgMTogU25hcC10by1HcmlkCiAgY29uc3QgaXRlbXMgPSBzbmFwVG9HcmlkKHRleHRJdGVtcyk7CgogIC8vIC0tIFBhc3MgMjogU3RhdGlzdGljYWwgTW9kZSBGb250IFByb2ZpbGVyIC0tIGRlcml2ZSBTX2JvZHkKICBjb25zdCBTX2JvZHkgPSBjb21wdXRlU0JvZHkoaXRlbXMpOwoKICAvLyAtLSBQYXNzIDM6IER5bmFtaWMgTGluZSBIZWlnaHQgLS0gZGVyaXZlIGF2Z0xpbmVIZWlnaHQKICBjb25zdCBhdmdMaW5lSGVpZ2h0ID0gY29tcHV0ZUF2Z0xpbmVIZWlnaHQoaXRlbXMpOwoKICAvLyAtLSBQYXNzIDQ6IFktc29ydCArIHJlbmRlciBsb29wCiAgY29uc3Qgc29ydGVkID0gWy4uLml0ZW1zXS5zb3J0KChhLCBiKSA9PiB7CiAgICBjb25zdCB5RGlmZiA9IChiLnRyYW5zZm9ybT8uWzVdID8/IDApIC0gKGEudHJhbnNmb3JtPy5bNV0gPz8gMCk7CiAgICBpZiAoTWF0aC5hYnMoeURpZmYpID4gMSkgcmV0dXJuIHlEaWZmOwogICAgcmV0dXJuIChhLnRyYW5zZm9ybT8uWzRdID8/IDApIC0gKGIudHJhbnNmb3JtPy5bNF0gPz8gMCk7CiAgfSk7CgogIGxldCBwYWdlVGV4dCA9ICcnOwogIGxldCBsYXN0WSA9IG51bGw7CiAgbGV0IGxhc3RGb250U2l6ZSA9IG51bGw7CgogIGZvciAoY29uc3QgaXRlbSBvZiBzb3J0ZWQpIHsKICAgIGNvbnN0IHRleHQgPSBpdGVtLnN0cjsKICAgIGlmICghdGV4dD8udHJpbSgpKSBjb250aW51ZTsKCiAgICBjb25zdCBmb250U2l6ZSA9IE1hdGgucm91bmQoTWF0aC5hYnMoaXRlbS50cmFuc2Zvcm0/LlswXSA/PyAxMikpOwogICAgY29uc3QgeSA9IGl0ZW0udHJhbnNmb3JtPy5bNV0gPz8gMDsKCiAgICBpZiAobGFzdFkgIT09IG51bGwpIHsKICAgICAgY29uc3QgeURpZmYgPSBNYXRoLmFicyhsYXN0WSAtIHkpOwoKICAgICAgLy8gRHluYW1pYyBMaW5lIEhlaWdodCBUaHJlc2hvbGRpbmcgKEJsb2NrIDRhKToKICAgICAgLy8gICBnYXAgPiAxLjh4IGF2Z0xpbmVIZWlnaHQgLT4gcGFyYWdyYXBoIGJyZWFrCiAgICAgIC8vICAgZ2FwID4gMS4yeCBhdmdMaW5lSGVpZ2h0IC0+IGxpbmUgYnJlYWsKICAgICAgaWYgKHlEaWZmID4gYXZnTGluZUhlaWdodCAqIDEuOCkgewogICAgICAgIHBhZ2VUZXh0ICs9ICdcblxuJzsKICAgICAgfSBlbHNlIGlmICh5RGlmZiA+IGF2Z0xpbmVIZWlnaHQgKiAxLjIpIHsKICAgICAgICBwYWdlVGV4dCArPSAnXG4nOwogICAgICB9IGVsc2UgaWYgKHkgPT09IGxhc3RZICYmIHBhZ2VUZXh0Lmxlbmd0aCA+IDAgJiYgIXBhZ2VUZXh0LmVuZHNXaXRoKCcgJykpIHsKICAgICAgICAvLyBTYW1lIGxpbmU6IGpvaW4gd2l0aCBzcGFjZQogICAgICAgIHBhZ2VUZXh0ICs9ICcgJzsKICAgICAgfQogICAgfQoKICAgIC8vIFN0YXRpc3RpY2FsIE1vZGUgRm9udC1TaXplIFByb2ZpbGVyIChCbG9jayA0Yik6CiAgICAvLyAgIEVtaXQgaGVhZGluZyBwcmVmaXggb25seSB3aGVuIGZvbnQgc2l6ZSBjaGFuZ2VzIEFORCBsZXZlbCBpcyBkZXRlY3RlZC4KICAgIGlmIChmb250U2l6ZSAhPT0gbGFzdEZvbnRTaXplKSB7CiAgICAgIGNvbnN0IGxldmVsID0gZGV0ZWN0SGVhZGluZ0xldmVsKGZvbnRTaXplLCBTX2JvZHkpOwogICAgICBpZiAobGV2ZWwgIT09IG51bGwgJiYgbGV2ZWwgPiAwKSB7CiAgICAgICAgaWYgKCFwYWdlVGV4dC5lbmRzV2l0aCgnXG4nKSkgcGFnZVRleHQgKz0gJ1xuJzsKICAgICAgICBwYWdlVGV4dCArPSAnIycucmVwZWF0KGxldmVsKSArICcgJzsKICAgICAgfQogICAgfQoKICAgIHBhZ2VUZXh0ICs9IHRleHQ7CiAgICBsYXN0WSA9IHk7CiAgICBsYXN0Rm9udFNpemUgPSBmb250U2l6ZTsKICB9CgogIHJldHVybiBwYWdlVGV4dC50cmltKCk7Cn0KCi8qKgogKiBNYWluIGV4dHJhY3Rpb24gZnVuY3Rpb24uCiAqIEFjY2VwdHMgYSBCdWZmZXIgKGZyb20gZnMucmVhZEZpbGVTeW5jIG9yIGF4aW9zIHJlc3BvbnNlKS4KICogUmV0dXJucyB0aGUgZnVsbCBNYXJrZG93biBzdHJpbmcuCiAqLwpleHBvcnQgYXN5bmMgZnVuY3Rpb24gZXh0cmFjdFBERihidWZmZXIsIHNvdXJjZSA9ICcnKSB7CiAgY29uc3QgcGFnZVRleHRzID0gW107CgogIGZ1bmN0aW9uIHBhZ2VSZW5kZXIocGFnZURhdGEpIHsKICAgIHJldHVybiBwYWdlRGF0YS5nZXRUZXh0Q29udGVudCgpLnRoZW4oKHRleHRDb250ZW50KSA9PiB7CiAgICAgIGNvbnN0IHJlbmRlcmVkID0gcmVuZGVyUGFnZSh0ZXh0Q29udGVudC5pdGVtcyk7CiAgICAgIHBhZ2VUZXh0c1twYWdlRGF0YS5wYWdlTnVtYmVyIC0gMV0gPSByZW5kZXJlZDsKICAgICAgcmV0dXJuIHRleHRDb250ZW50Lml0ZW1zLm1hcCgoaSkgPT4gaS5zdHIpLmpvaW4oJyAnKTsKICAgIH0pOwogIH0KCiAgYXdhaXQgcGRmUGFyc2UoYnVmZmVyLCB7IHBhZ2VyZW5kZXI6IHBhZ2VSZW5kZXIgfSk7CgogIGlmIChwYWdlVGV4dHMubGVuZ3RoID09PSAwKSB7CiAgICB0aHJvdyBuZXcgRXJyb3IoJ05vIHRleHQgY29udGVudCBmb3VuZCBpbiBQREYuIFRoZSBmaWxlIG1heSBiZSBzY2FubmVkL2ltYWdlLW9ubHkuJyk7CiAgfQoKICByZXR1cm4gcGFnZVRleHRzOwp9Cg==
+import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+import { detectColumnGutters } from '../layout/mer.js';
+import { novaLADSort } from '../layout/novlad.js';
+
+// BLUEPRINT: Statistical Mode Font-Size Profiler (Block 4b)
+// Builds a frequency histogram of all font sizes for a page's text items.
+// Returns S_body = the most frequent font size (the baseline body text size).
+// O-cost: O(N) where N = number of text items on page.
+function computeSBody(items) {
+  const freq = new Map();
+  for (const item of items) {
+    if (!item.str?.trim()) continue;
+    const size = Math.round(Math.abs(item.transform?.[0] ?? 12));
+    freq.set(size, (freq.get(size) ?? 0) + 1);
+  }
+  let modeSize = 12, modeCount = 0;
+  for (const [size, count] of freq) {
+    if (count > modeCount) { modeCount = count; modeSize = size; }
+  }
+  return modeSize || 12;
+}
+
+// Returns the heading level (1–3) for a font size given S_body, or null if not a heading.
+// Ratios: >=1.5x H1; >=1.2x H2; >=1.05x H3; <0.8x caption (return -1)
+function detectHeadingLevel(size, S_body) {
+  const r = size / S_body;
+  if (r >= 1.5)  return 1;
+  if (r >= 1.2)  return 2;
+  if (r >= 1.05) return 3;
+  if (r < 0.8)   return -1; // caption/footnote: suppress heading prefix
+  return null;
+}
+
+// BLUEPRINT: Dynamic Line Height Thresholding (Block 4a)
+// Computes the median Y-gap between consecutive text lines on this page.
+// Used as avgLineHeight so paragraph breaks scale to the document, not a hardcoded px.
+// O-cost: O(N log N) for sort, O(1) median lookup.
+function computeAvgLineHeight(items) {
+  const ys = [...new Set(items.map(i => i.transform?.[5] ?? 0))].sort((a, b) => b - a);
+  if (ys.length < 2) return 12;
+  const gaps = [];
+  for (let i = 1; i < ys.length; i++) gaps.push(ys[i - 1] - ys[i]);
+  gaps.sort((a, b) => a - b);
+  return gaps[Math.floor(gaps.length / 2)] || 12;
+}
+
+// BLUEPRINT: Snap-to-Grid (pre-pass)
+// Rounds all transform X/Y coordinates to nearest integer immediately after extraction.
+// Eliminates float-drift bugs (X=10.001 vs X=10.004) for all downstream spatial algorithms.
+// O-cost: O(N) - no-cost pass.
+function snapToGrid(items) {
+  for (const item of items) {
+    if (item.transform) {
+      item.transform[4] = Math.round(item.transform[4]); // X
+      item.transform[5] = Math.round(item.transform[5]); // Y
+    }
+  }
+  return items;
+}
+
+/**
+ * Render a single PDF page's text items into raw Markdown lines.
+ *
+ * Full pipeline per page (in order):
+ *   Pass 1) Snap-to-Grid                  -- eliminate float drift
+ *   Pass 2) Statistical Mode Font Profiler -- compute S_body
+ *   Pass 3) Dynamic Line Height            -- compute avgLineHeight
+ *   Pass 4) MER Column Detection           -- detect column gutters
+ *   Pass 5) NovaLAD Reading Order          -- sort items in correct reading order
+ *   Pass 6) Render loop                    -- emit Markdown
+ *
+ * @param {object[]} textItems  - raw items from pdf-parse getTextContent()
+ * @param {number}   pageWidth  - from pageData.view[2]
+ * @param {number}   pageHeight - from pageData.view[3]
+ */
+function renderPage(textItems, pageWidth, pageHeight) {
+  // -- Pass 1: Snap-to-Grid
+  const items = snapToGrid(textItems);
+
+  // -- Pass 2: Statistical Mode Font Profiler -- derive S_body
+  const S_body = computeSBody(items);
+
+  // -- Pass 3: Dynamic Line Height -- derive avgLineHeight
+  const avgLineHeight = computeAvgLineHeight(items);
+
+  // -- Pass 4: MER Column Detection -- find column gutters
+  const gutters = detectColumnGutters(items, pageWidth, pageHeight);
+
+  // -- Pass 5: NovaLAD Reading Order -- sort by column then top-to-bottom
+  const ordered = novaLADSort(items, gutters);
+
+  // -- Pass 6: Render loop
+  let pageText = '';
+  let lastY = null;
+  let lastFontSize = null;
+
+  for (const item of ordered) {
+    const text = item.str;
+    if (!text?.trim()) continue;
+
+    const fontSize = Math.round(Math.abs(item.transform?.[0] ?? 12));
+    const y = item.transform?.[5] ?? 0;
+
+    if (lastY !== null) {
+      const yDiff = Math.abs(lastY - y);
+
+      // Dynamic Line Height Thresholding (Block 4a):
+      //   gap > 1.8x avgLineHeight -> paragraph break
+      //   gap > 1.2x avgLineHeight -> line break
+      if (yDiff > avgLineHeight * 1.8) {
+        pageText += '\n\n';
+      } else if (yDiff > avgLineHeight * 1.2) {
+        pageText += '\n';
+      } else if (y === lastY && pageText.length > 0 && !pageText.endsWith(' ')) {
+        // Same line: join with space
+        pageText += ' ';
+      }
+    }
+
+    // Statistical Mode Font-Size Profiler (Block 4b):
+    //   Emit heading prefix only when font size changes AND level is detected.
+    if (fontSize !== lastFontSize) {
+      const level = detectHeadingLevel(fontSize, S_body);
+      if (level !== null && level > 0) {
+        if (!pageText.endsWith('\n')) pageText += '\n';
+        pageText += '#'.repeat(level) + ' ';
+      }
+    }
+
+    pageText += text;
+    lastY = y;
+    lastFontSize = fontSize;
+  }
+
+  return pageText.trim();
+}
+
+/**
+ * Main extraction function.
+ * Accepts a Buffer (from fs.readFileSync or axios response).
+ * Returns an array of per-page Markdown strings.
+ */
+export async function extractPDF(buffer, source = '') {
+  const pageTexts = [];
+
+  function pageRender(pageData) {
+    return pageData.getTextContent().then((textContent) => {
+      // Thread pageWidth and pageHeight from pageData.view into renderPage
+      const [, , pageWidth, pageHeight] = pageData.view ?? [0, 0, 612, 792];
+      const rendered = renderPage(textContent.items, pageWidth, pageHeight);
+      pageTexts[pageData.pageNumber - 1] = rendered;
+      return textContent.items.map((i) => i.str).join(' ');
+    });
+  }
+
+  await pdfParse(buffer, { pagerender: pageRender });
+
+  if (pageTexts.length === 0) {
+    throw new Error('No text content found in PDF. The file may be scanned/image-only.');
+  }
+
+  return pageTexts;
+}
