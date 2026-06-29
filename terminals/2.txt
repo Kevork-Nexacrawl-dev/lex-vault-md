@@ -1,0 +1,17 @@
+---
+pid: 36804
+cwd: "C:\Users\k\Documents\Projects\pdf2md-cli"
+command: "$env:MCP_MEMORY_STORAGE_BACKEND=\"sqlite_vec\"; $env:MCP_MEMORY_SQLITE_PATH=\"C:/Users/k/AppData/Roaming/mcp-memory-service/projects/pdf2md-cli.db\"; $env:MCP_MEMORY_BACKUPS_PATH=\"C:/Users/k/AppData/Roaming/mcp-memory-service/backups/pdf2md-cli\"; & \"C:/Users/k/.local/bin/uvx.exe\" --from mcp-memory-service --with numpy --with onnxruntime --with tokenizers memory server 2>&1 | Select-Object -First 40"
+started_at: 2026-06-18T16:49:07.368Z
+running_for_ms: 86400013 
+---
+WARNING:mcp_memory_service.storage.milvus:pymilvus not available. Install with: pip install pymilvus milvus-lite
+WARNING:mcp_memory_service.quality.onnx_ranker:Transformers not available. Install with: pip install transformers torch huggingface-hub
+WARNING:mcp_memory_service.dependency_check:Dependencies missing, extending base timeout to 60.0s (before client cap)
+WARNING:mcp_memory_service.utils.startup_orchestrator:Async initialization timed out. Continuing with server startup.
+
+---
+exit_code: -1
+elapsed_ms: 86400013
+ended_at: 2026-06-19T16:50:37.630Z
+---

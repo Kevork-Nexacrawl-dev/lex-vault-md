@@ -28,3 +28,5 @@ npm-debug.log*
 # Private planning documents (local only — not committed to the repo)
 docs/
 pdf2md-cli.code-workspace
+/terminals
+
