@@ -1,4 +1,4 @@
-# Contributing to pdf2md-cli
+# Contributing to LexVaultMD
 
 Thanks for your interest in improving this project.
 
@@ -11,8 +11,8 @@ Thanks for your interest in improving this project.
 ## Development Setup
 
 ```bash
-git clone https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli.git
-cd pdf2md-cli
+git clone https://github.com/Kevork-Nexacrawl-dev/lexvaultmd.git
+cd lexvaultmd
 npm install
 ```
 

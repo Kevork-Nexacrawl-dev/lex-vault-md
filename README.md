@@ -1,38 +1,37 @@
-# pdf2md-cli — Lightning-Fast PDF to Markdown CLI
+# LexVaultMD — Legal PDF to Markdown CLI for Litigation Teams
 
-> **pdf2md-cli by Nexacrawl** — Convert PDF documents to clean, structured Markdown in seconds. Smart heading detection, batch mode, local files, and remote URLs.
+> **LexVaultMD by Nexacrawl** converts legal PDFs into clean, structured, AI-ready Markdown for discovery, exhibits, pleadings, case files, and litigation review.
 
-**Repository:** [github.com/Kevork-Nexacrawl-dev/pdf2md-cli](https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli)
+**Repository:** [github.com/Kevork-Nexacrawl-dev/lexvaultmd](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Kevork--Nexacrawl--dev%2Fpdf2md--cli-181717?logo=github)](https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli)
-[![npm version](https://img.shields.io/badge/npm-v1.0.0-cb3837?logo=npm)](https://www.npmjs.com/package/pdf2md-cli)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Kevork--Nexacrawl--dev%2Flexvaultmd-181717?logo=github)](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
+[![npm version](https://img.shields.io/badge/npm-v1.1.0-cb3837?logo=npm)](https://www.npmjs.com/package/lexvaultmd)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
-[![GitHub stars](https://img.shields.io/github/stars/Kevork-Nexacrawl-dev/pdf2md-cli?style=social)](https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli)
+[![GitHub stars](https://img.shields.io/github/stars/Kevork-Nexacrawl-dev/lexvaultmd?style=social)](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
 
 ---
 
-## Why pdf2md-cli?
+## Why LexVaultMD?
 
-Most PDF-to-Markdown tools dump raw text and call it done. **pdf2md-cli** reads the PDF transform matrix to detect real heading hierarchy, preserves page structure, and runs locally with zero API calls.
+Legal PDFs — motions, briefs, exhibits, deposition transcripts, discovery productions — are structurally rich but extraction-hostile. **LexVaultMD** reads the PDF transform matrix to detect real heading hierarchy, strips headers/footers/watermarks, detects multi-column layouts, extracts tables, and runs entirely offline with zero API calls. The output is clean, structured Markdown that is immediately usable for AI-assisted review, case management, and litigation workflows.
 
-| | **pdf2md-cli** (Nexacrawl) | Typical converters |
+| | **LexVaultMD** (Nexacrawl) | Typical converters |
 |---|---|---|
 | Speed | **~2 seconds for a 12 MB PDF** | Often slower; many use cloud APIs |
 | Headings | Font-size-based detection from transform matrix | Flat text or guesswork |
 | Modes | `local`, `web`, `batch` | Usually single-file only |
 | Offline | Yes — no internet required for local/batch | Varies |
-| Output | Page markers, metadata header, structured `.md` | Plain text dump |
-
-> **Not the same as [opengovsg/pdf2md](https://github.com/opengovsg/pdf2md).** That is a separate, older project. This repo is **Kevork-Nexacrawl-dev/pdf2md-cli** — built by Nexacrawl with a different extraction engine and CLI-first workflow.
+| Output | Structured `.md` with page markers, metadata header | Plain text dump |
+| Legal Artifacts | Header/footer removal, watermark stripping, margin noise | Not handled |
 
 ---
 
 ## Install
 
 ```bash
-npm install -g pdf2md-cli
+npm install -g lexvaultmd
 ```
 
 Requires Node.js 18+.
@@ -42,14 +41,14 @@ Requires Node.js 18+.
 ## Quick Start
 
 ```bash
-# Convert a local PDF
-pdf2md local ./report.pdf
+# Convert a local legal PDF
+lexvaultmd local ./motion.pdf
 
 # Fetch and convert a remote PDF
-pdf2md web https://arxiv.org/pdf/2103.00020.pdf
+lexvaultmd web https://example.com/brief.pdf
 
-# Batch convert an entire folder
-pdf2md batch ./documents/ --output ./converted/
+# Batch convert an entire discovery folder
+lexvaultmd batch ./discovery/ --output ./case-vault/
 ```
 
 ---
@@ -59,39 +58,39 @@ pdf2md batch ./documents/ --output ./converted/
 ### Convert a local PDF
 
 ```bash
-pdf2md local ./report.pdf
+lexvaultmd local ./motion.pdf
 ```
 
 ### Fetch and convert a remote PDF
 
 ```bash
-pdf2md web https://arxiv.org/pdf/2103.00020.pdf
+lexvaultmd web https://example.com/brief.pdf
 ```
 
 ### Batch convert an entire folder
 
 ```bash
 # Convert all PDFs — output .md files to the same folder
-pdf2md batch ./documents/
+lexvaultmd batch ./discovery/
 
-# Write converted files to a separate output folder
-pdf2md batch ./documents/ --output ./converted/
+# Write converted files to a separate case vault folder
+lexvaultmd batch ./discovery/ --output ./case-vault/
 
 # Control how many PDFs process in parallel (default: 3)
-pdf2md batch ./documents/ --output ./converted/ --concurrency 5
+lexvaultmd batch ./discovery/ --output ./case-vault/ --concurrency 5
 ```
 
 **Batch output example:**
 
 ```
-ℹ Found 10 PDF(s) in documents
-ℹ Output → ./converted
+ℹ Found 10 PDF(s) in discovery
+ℹ Output → ./case-vault
 
-  ✔ document-1.pdf → document-1.md  (4 page(s), 7203 chars)
-  ✔ document-2.pdf → document-2.md  (3 page(s), 5891 chars)
-  ✔ document-3.pdf → document-3.md  (2 page(s), 3142 chars)
-  ⏭ document-4.pdf — Skipped (exists)
-  ✖ document-5.pdf — encrypted PDF — skipped
+  ✔ exhibit-001.pdf → exhibit-001.md  (4 page(s), 7203 chars)
+  ✔ motion-to-dismiss.pdf → motion-to-dismiss.md  (3 page(s), 5891 chars)
+  ✔ deposition-smith.pdf → deposition-smith.md  (2 page(s), 3142 chars)
+  ⏭ exhibit-002.pdf — Skipped (exists)
+  ✖ sealed-filing.pdf — encrypted PDF — skipped
 
 ────────────────────────────────────────────────
   ✔ Batch complete — 10 file(s) processed
@@ -119,27 +118,27 @@ Batch mode is **safe to re-run** — already-converted files are skipped automat
 
 ```bash
 # Single file — save to a custom path
-pdf2md local ./research.pdf --output ./notes/research.md
+lexvaultmd local ./pleading.pdf --output ./vault/pleading.md
 
 # Fetch remote PDF and copy result to clipboard
-pdf2md web https://example.com/paper.pdf --clipboard
+lexvaultmd web https://example.com/exhibit.pdf --clipboard
 
-# Batch with higher concurrency for large folders
-pdf2md batch ./archive/ --output ./archive_md/ --concurrency 8
+# Batch with higher concurrency for large discovery productions
+lexvaultmd batch ./production/ --output ./review/ --concurrency 8
 
 # Full example with both flags
-pdf2md local ./invoice.pdf -o ./invoices/invoice.md -c
+lexvaultmd local ./filing.pdf -o ./filings/filing.md -c
 ```
 
 ---
 
 ## Performance
 
-**pdf2md-cli** is built for speed — pure Node.js, local extraction, no cloud round-trips.
+**LexVaultMD** is built for speed — pure Node.js, local extraction, no cloud round-trips.
 
 | Document | Result |
 |---|---|
-| 12 MB PDF | **~2 seconds** on a typical dev machine |
+| 12 MB PDF | **~2 seconds** on a typical machine |
 | Batch folders | Parallel processing with `--concurrency` (default: 3) |
 | Network | Not required for `local` and `batch` modes |
 
@@ -150,24 +149,19 @@ pdf2md local ./invoice.pdf -o ./invoices/invoice.md -c
 Every conversion produces a structured Markdown file:
 
 ```markdown
-<!-- Source: report.pdf | Extracted: Apr 18, 2026, 06:00 PM -->
+<!-- Source: motion.pdf | Extracted: Jun 29, 2026, 10:00 AM -->
 
-## Page 1
+[page 1 content flows here]
 
-# Document Title
+<!-- page 2 -->
+*— page 2 —*
 
-## Section Heading
+# ARGUMENT
+
+## I. THE COURT HAS JURISDICTION
 
 Paragraph text flows here with proper line breaks
 and paragraph spacing preserved from the original PDF.
-
----
-
-## Page 2
-
-### Subsection
-
-Continued content...
 ```
 
 **Heading detection** maps font sizes from the PDF's transform matrix:
@@ -185,8 +179,12 @@ Continued content...
 
 - **Lightning-fast conversion** — local PDFs process in seconds, not minutes
 - **Smart heading detection** — reads raw font-size data from the PDF transform matrix
+- **Multi-column layout detection** — MER algorithm + XY-Cut++ fallback for complex legal layouts
+- **Table extraction** — hybrid lattice/stream orchestrator for bordered and borderless tables
+- **Artifact removal** — strips repeating headers/footers, watermarks (`DRAFT`, `CONFIDENTIAL`, `COPY`), and margin noise
+- **Garbage gate** — detects and skips scanned/image-only pages automatically
 - **Y-sorted text extraction** — items sorted by visual position (top→bottom, left→right)
-- **Page separators** — each page is a clearly labeled `## Page N` section with `---` dividers
+- **Subtle page markers** — invisible HTML comment + `*— page N —*` italic; no large headings
 - **Source metadata** — output header includes filename/URL and extraction timestamp
 - **Batch conversion** — convert entire folders with parallel processing and a clean summary
 - **Skip on exist** — batch mode skips already-converted files; safe to re-run anytime
@@ -204,7 +202,7 @@ Continued content...
 | File not found | Clear error with resolved path |
 | Not a `.pdf` file | Rejects before attempting extraction |
 | Encrypted / password-protected PDF | Specific error message |
-| Scanned / image-only PDF | Detects no text content, explains why |
+| Scanned / image-only PDF | Detects via garbage gate, skips with placeholder |
 | Unreachable URL | Distinguishes DNS failure vs. refused connection |
 | HTTP 404 / 403 | Status-specific error messages |
 | Request timeout (30s) | Clean timeout message |
@@ -225,24 +223,36 @@ Continued content...
 
 ---
 
-## Background
+## Migration from pdf2md-cli
 
-Most PDF-to-Markdown tools treat extraction as a text dump. I built an earlier browser-based version to solve heading detection using the PDF transform matrix, then ported the core logic to this Node.js CLI for developer workflows, automation, and CI pipelines.
+This project was formerly published as `pdf2md-cli`.
 
-**The result:** Markdown that reflects the document's structure — real headings, proper paragraph breaks, and page markers — ready for Obsidian, Notion, or any Markdown editor.
+New install:
+
+```bash
+npm install -g lexvaultmd
+```
+
+New CLI command:
+
+```bash
+lexvaultmd
+```
+
+The legacy `pdf2md` command remains available temporarily for backward compatibility.
 
 ---
 
 ## Local Development
 
 ```bash
-git clone https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli.git
-cd pdf2md-cli
+git clone https://github.com/Kevork-Nexacrawl-dev/lexvaultmd.git
+cd lexvaultmd
 npm install
-npm link          # makes pdf2md available globally
+npm link          # makes both lexvaultmd and pdf2md available globally
 
-pdf2md local ./test.pdf
-pdf2md batch ./test-folder/
+lexvaultmd local ./test.pdf
+lexvaultmd batch ./test-folder/
 ```
 
 ---
@@ -250,10 +260,13 @@ pdf2md batch ./test-folder/
 ## FAQ
 
 **Where is the official repo?**
-→ [https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli](https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli)
+→ [https://github.com/Kevork-Nexacrawl-dev/lexvaultmd](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
 
 **Is this the same as opengovsg/pdf2md?**
-→ No. That is a different project. Search for **Kevork-Nexacrawl-dev/pdf2md-cli** or **pdf2md-cli nexacrawl**.
+→ No. That is a different project. Search for **Kevork-Nexacrawl-dev/lexvaultmd** or **lexvaultmd nexacrawl**.
+
+**What happened to pdf2md-cli?**
+→ This project was renamed to **lexvaultmd** and repositioned for legal teams. The `pdf2md` CLI alias still works temporarily for backward compatibility.
 
 **Who maintains this?**
 → [Kevork (Nexacrawl)](https://github.com/Kevork-Nexacrawl-dev) — contact: nexacrawl@gmail.com
@@ -262,7 +275,7 @@ pdf2md batch ./test-folder/
 
 ## License
 
-**Business Source License 1.1** — © 2026 Kevork (Nexacrawl)
+**Business Source License 1.1** — © 2026 Nexacrawl
 
 This project is licensed under the BSL 1.1, which allows non-production use, modification, and redistribution. **Production/commercial use requires a separate license.**
 
