@@ -11,8 +11,8 @@ Thanks for your interest in improving this project.
 ## Development Setup
 
 ```bash
-git clone https://github.com/Kevork-Nexacrawl-dev/lexvaultmd.git
-cd lexvaultmd
+git clone https://github.com/Kevork-Nexacrawl-dev/lex-vault-md.git
+cd lex-vault-md
 npm install
 ```
 

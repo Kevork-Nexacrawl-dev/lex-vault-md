@@ -1,18 +1,18 @@
 {
-  "name": "lexvaultmd",
+  "name": "lex-vault-md",
   "version": "1.1.0",
   "description": "LexVaultMD by Nexacrawl — Legal PDF to Markdown CLI for discovery, exhibits, pleadings, case files, and AI-ready legal document workflows.",
-  "homepage": "https://github.com/Kevork-Nexacrawl-dev/lexvaultmd",
+  "homepage": "https://github.com/Kevork-Nexacrawl-dev/lex-vault-md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevork-Nexacrawl-dev/lexvaultmd.git"
+    "url": "git+https://github.com/Kevork-Nexacrawl-dev/lex-vault-md.git"
   },
   "bugs": {
-    "url": "https://github.com/Kevork-Nexacrawl-dev/lexvaultmd/issues"
+    "url": "https://github.com/Kevork-Nexacrawl-dev/lex-vault-md/issues"
   },
   "type": "module",
   "bin": {
-    "lexvaultmd": "bin/cli.js",
+    "lex-vault-md": "bin/cli.js",
     "pdf2md": "bin/cli.js"
   },
   "scripts": {
@@ -37,7 +37,7 @@
     "batch-pdf",
     "local-first",
     "nexacrawl",
-    "lexvaultmd"
+    "lex-vault-md"
   ],
   "author": "Kevork <nexacrawl@gmail.com>",
   "license": "BSL-1.1",

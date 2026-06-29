@@ -39,20 +39,20 @@ src/utils/logger.js         # chalk-based log helpers: log.info / success / warn
 - **Heading thresholds** live in `HEADING_THRESHOLDS` at the top of `extractor.js`. Font sizes come from `item.transform[0]` (scale X). Adjust thresholds there, not in the render loop.
 - **`pdf-parse` import path**: must be `pdf-parse/lib/pdf-parse.js`, not the package root — the root entry point triggers a test-file read that throws in ESM.
 - **`clipboardy`** is an optional peer dependency (not in `package.json`). Both commands gracefully fall back with a warning if it's absent. Do not add it to `dependencies`.
-- **CLI binary names**: `lexvaultmd` (primary) and `pdf2md` (legacy alias) — both point to `bin/cli.js`.
+- **CLI binary names**: `lex-vault-md` (primary) and `pdf2md` (legacy alias) — both point to `bin/cli.js`.
 - Errors always call `process.exit(1)` after `log.error(...)`. No thrown exceptions bubble out of commands.
 
 ## Build Log
 
 ### Build 0 — Rename and Legal-Tech Repositioning
 
-Renamed the project from `pdf2md-cli` to `LexVaultMD` / `lexvaultmd`.
+Renamed the project from `pdf2md-cli` to `LexVaultMD` / `lex-vault-md`.
 
 Updated:
-- npm package name to `lexvaultmd`
-- CLI command to `lexvaultmd`
+- npm package name to `lex-vault-md`
+- CLI command to `lex-vault-md`
 - temporary legacy alias `pdf2md`
-- repository references to `Kevork-Nexacrawl-dev/lexvaultmd`
+- repository renamed to `Kevork-Nexacrawl-dev/lex-vault-md`
 - README positioning for legal teams, litigation, discovery, exhibits, pleadings, and AI-ready Markdown workflows
 - package keywords for legal-tech SEO
 - BSL licensor to `Nexacrawl`

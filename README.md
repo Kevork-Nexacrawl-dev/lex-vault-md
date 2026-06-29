@@ -2,14 +2,14 @@
 
 > **LexVaultMD by Nexacrawl** converts legal PDFs into clean, structured, AI-ready Markdown for discovery, exhibits, pleadings, case files, and litigation review.
 
-**Repository:** [github.com/Kevork-Nexacrawl-dev/lexvaultmd](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
+**Repository:** [github.com/Kevork-Nexacrawl-dev/lex-vault-md](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Kevork--Nexacrawl--dev%2Flexvaultmd-181717?logo=github)](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
-[![npm version](https://img.shields.io/badge/npm-v1.1.0-cb3837?logo=npm)](https://www.npmjs.com/package/lexvaultmd)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Kevork--Nexacrawl--dev%2Flex--vault--md-181717?logo=github)](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
+[![npm version](https://img.shields.io/badge/npm-v1.1.0-cb3837?logo=npm)](https://www.npmjs.com/package/lex-vault-md)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
-[![GitHub stars](https://img.shields.io/github/stars/Kevork-Nexacrawl-dev/lexvaultmd?style=social)](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
+[![GitHub stars](https://img.shields.io/github/stars/Kevork-Nexacrawl-dev/lex-vault-md?style=social)](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
 
 ---
 
@@ -31,7 +31,7 @@ Legal PDFs — motions, briefs, exhibits, deposition transcripts, discovery prod
 ## Install
 
 ```bash
-npm install -g lexvaultmd
+npm install -g lex-vault-md
 ```
 
 Requires Node.js 18+.
@@ -42,13 +42,13 @@ Requires Node.js 18+.
 
 ```bash
 # Convert a local legal PDF
-lexvaultmd local ./motion.pdf
+lex-vault-md local ./motion.pdf
 
 # Fetch and convert a remote PDF
-lexvaultmd web https://example.com/brief.pdf
+lex-vault-md web https://example.com/brief.pdf
 
 # Batch convert an entire discovery folder
-lexvaultmd batch ./discovery/ --output ./case-vault/
+lex-vault-md batch ./discovery/ --output ./case-vault/
 ```
 
 ---
@@ -58,26 +58,26 @@ lexvaultmd batch ./discovery/ --output ./case-vault/
 ### Convert a local PDF
 
 ```bash
-lexvaultmd local ./motion.pdf
+lex-vault-md local ./motion.pdf
 ```
 
 ### Fetch and convert a remote PDF
 
 ```bash
-lexvaultmd web https://example.com/brief.pdf
+lex-vault-md web https://example.com/brief.pdf
 ```
 
 ### Batch convert an entire folder
 
 ```bash
 # Convert all PDFs — output .md files to the same folder
-lexvaultmd batch ./discovery/
+lex-vault-md batch ./discovery/
 
 # Write converted files to a separate case vault folder
-lexvaultmd batch ./discovery/ --output ./case-vault/
+lex-vault-md batch ./discovery/ --output ./case-vault/
 
 # Control how many PDFs process in parallel (default: 3)
-lexvaultmd batch ./discovery/ --output ./case-vault/ --concurrency 5
+lex-vault-md batch ./discovery/ --output ./case-vault/ --concurrency 5
 ```
 
 **Batch output example:**
@@ -118,16 +118,16 @@ Batch mode is **safe to re-run** — already-converted files are skipped automat
 
 ```bash
 # Single file — save to a custom path
-lexvaultmd local ./pleading.pdf --output ./vault/pleading.md
+lex-vault-md local ./pleading.pdf --output ./vault/pleading.md
 
 # Fetch remote PDF and copy result to clipboard
-lexvaultmd web https://example.com/exhibit.pdf --clipboard
+lex-vault-md web https://example.com/exhibit.pdf --clipboard
 
 # Batch with higher concurrency for large discovery productions
-lexvaultmd batch ./production/ --output ./review/ --concurrency 8
+lex-vault-md batch ./production/ --output ./review/ --concurrency 8
 
 # Full example with both flags
-lexvaultmd local ./filing.pdf -o ./filings/filing.md -c
+lex-vault-md local ./filing.pdf -o ./filings/filing.md -c
 ```
 
 ---
@@ -230,13 +230,13 @@ This project was formerly published as `pdf2md-cli`.
 New install:
 
 ```bash
-npm install -g lexvaultmd
+npm install -g lex-vault-md
 ```
 
 New CLI command:
 
 ```bash
-lexvaultmd
+lex-vault-md
 ```
 
 The legacy `pdf2md` command remains available temporarily for backward compatibility.
@@ -246,13 +246,13 @@ The legacy `pdf2md` command remains available temporarily for backward compatibi
 ## Local Development
 
 ```bash
-git clone https://github.com/Kevork-Nexacrawl-dev/lexvaultmd.git
-cd lexvaultmd
+git clone https://github.com/Kevork-Nexacrawl-dev/lex-vault-md.git
+cd lex-vault-md
 npm install
-npm link          # makes both lexvaultmd and pdf2md available globally
+npm link          # makes both lex-vault-md and pdf2md available globally
 
-lexvaultmd local ./test.pdf
-lexvaultmd batch ./test-folder/
+lex-vault-md local ./test.pdf
+lex-vault-md batch ./test-folder/
 ```
 
 ---
@@ -260,13 +260,13 @@ lexvaultmd batch ./test-folder/
 ## FAQ
 
 **Where is the official repo?**
-→ [https://github.com/Kevork-Nexacrawl-dev/lexvaultmd](https://github.com/Kevork-Nexacrawl-dev/lexvaultmd)
+→ [https://github.com/Kevork-Nexacrawl-dev/lex-vault-md](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
 
 **Is this the same as opengovsg/pdf2md?**
-→ No. That is a different project. Search for **Kevork-Nexacrawl-dev/lexvaultmd** or **lexvaultmd nexacrawl**.
+→ No. That is a different project. Search for **Kevork-Nexacrawl-dev/lex-vault-md** or **lex-vault-md nexacrawl**.
 
 **What happened to pdf2md-cli?**
-→ This project was renamed to **lexvaultmd** and repositioned for legal teams. The `pdf2md` CLI alias still works temporarily for backward compatibility.
+→ This project was renamed to **LexVaultMD** (`lex-vault-md`) and repositioned for legal teams. The `pdf2md` CLI alias still works temporarily for backward compatibility.
 
 **Who maintains this?**
 → [Kevork (Nexacrawl)](https://github.com/Kevork-Nexacrawl-dev) — contact: nexacrawl@gmail.com
