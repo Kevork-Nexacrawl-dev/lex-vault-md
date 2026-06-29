@@ -1,6 +1,6 @@
 {
   "name": "pdf2md-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "pdf2md-cli by Nexacrawl — Lightning-fast PDF to Markdown CLI. ~2s for 12MB files. Font-size heading detection, batch mode, local & web URLs.",
   "homepage": "https://github.com/Kevork-Nexacrawl-dev/pdf2md-cli",
   "repository": {
