@@ -2,6 +2,7 @@ import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import { detectColumnGutters } from '../layout/mer.js';
 import { novaLADSort } from '../layout/novlad.js';
 import { extractTables } from '../tables/orchestrator.js';
+import { runGate, buildHeaderFooterRegistry } from '../gate/index.js';
 
 // BLUEPRINT: Statistical Mode Font-Size Profiler (Block 4b)
 // Builds a frequency histogram of all font sizes for a page's text items.
@@ -71,10 +72,10 @@ function snapToGrid(items) {
  *   Pass 6) Hybrid Table Extraction        -- extract tables, remove consumed items
  *   Pass 7) Render loop                    -- emit Markdown for remaining text
  *
- * @param {object[]} textItems   - raw items from pdf-parse getTextContent()
- * @param {number}   pageWidth   - from pageData.view[2]
- * @param {number}   pageHeight  - from pageData.view[3]
- * @param {object}   operatorList- from pageData.getOperatorList()
+ * @param {object[]} textItems   - clean items (post artifact removal)
+ * @param {number}   pageWidth
+ * @param {number}   pageHeight
+ * @param {object}   operatorList
  */
 function renderPage(textItems, pageWidth, pageHeight, operatorList) {
   // -- Pass 1: Snap-to-Grid
@@ -100,9 +101,7 @@ function renderPage(textItems, pageWidth, pageHeight, operatorList) {
   let lastY = null;
   let lastFontSize = null;
 
-  // Interleave table blocks at their Y-position within the text stream.
-  // We track which tables have been injected by their maxY threshold.
-  const pendingTables = [...tableBlocks].sort((a, b) => b.maxY - a.maxY); // highest Y first
+  const pendingTables = [...tableBlocks].sort((a, b) => b.maxY - a.maxY);
   let tableIdx = 0;
 
   for (const item of remainingItems) {
@@ -112,7 +111,6 @@ function renderPage(textItems, pageWidth, pageHeight, operatorList) {
     const fontSize = Math.round(Math.abs(item.transform?.[0] ?? 12));
     const y = item.transform?.[5] ?? 0;
 
-    // Inject any pending table blocks whose maxY is above this item's Y
     while (tableIdx < pendingTables.length && pendingTables[tableIdx].maxY >= y) {
       if (pageText.length > 0 && !pageText.endsWith('\n')) pageText += '\n\n';
       pageText += pendingTables[tableIdx].markdown + '\n\n';
@@ -143,7 +141,6 @@ function renderPage(textItems, pageWidth, pageHeight, operatorList) {
     lastFontSize = fontSize;
   }
 
-  // Flush any remaining table blocks (e.g. table at bottom of page)
   while (tableIdx < pendingTables.length) {
     if (pageText.length > 0 && !pageText.endsWith('\n')) pageText += '\n\n';
     pageText += pendingTables[tableIdx].markdown + '\n\n';
@@ -157,26 +154,75 @@ function renderPage(textItems, pageWidth, pageHeight, operatorList) {
  * Main extraction function.
  * Accepts a Buffer (from fs.readFileSync or axios response).
  * Returns an array of per-page Markdown strings.
+ *
+ * Two-pass architecture:
+ *   Pass A) Pre-scan all pages to build headerFooterRegistry
+ *   Pass B) Render each page: gate check -> artifact removal -> renderPage()
  */
 export async function extractPDF(buffer, source = '') {
-  const pageTexts = [];
+  // -------------------------------------------------------------------
+  // Pass A: Pre-scan — collect raw page data for header/footer registry
+  // -------------------------------------------------------------------
+  const rawPageData = [];     // { items, pageWidth, pageHeight }[]
+  const rawOperatorLists = []; // operatorList per page (for reuse in Pass B)
+  const rawTextContents = [];  // textContent per page (for reuse in Pass B)
+  const rawViews = [];         // [x,y,w,h] per page
 
-  function pageRender(pageData) {
-    // Fetch text content and operator list in parallel
+  function preScanRender(pageData) {
     return Promise.all([
       pageData.getTextContent(),
-      pageData.getOperatorList().catch(() => null), // graceful: some PDFs block operator access
+      pageData.getOperatorList().catch(() => null),
     ]).then(([textContent, operatorList]) => {
+      const idx = pageData.pageNumber - 1;
       const [, , pageWidth, pageHeight] = pageData.view ?? [0, 0, 612, 792];
-      const rendered = renderPage(textContent.items, pageWidth, pageHeight, operatorList);
-      pageTexts[pageData.pageNumber - 1] = rendered;
-      return textContent.items.map((i) => i.str).join(' ');
+      rawTextContents[idx]  = textContent;
+      rawOperatorLists[idx] = operatorList;
+      rawViews[idx]         = [pageWidth, pageHeight];
+      rawPageData[idx]      = { items: textContent.items, pageWidth, pageHeight };
+      return textContent.items.map(i => i.str).join(' ');
     });
   }
 
-  await pdfParse(buffer, { pagerender: pageRender });
+  await pdfParse(buffer, { pagerender: preScanRender });
 
-  if (pageTexts.length === 0) {
+  if (rawPageData.length === 0) {
+    throw new Error('No text content found in PDF. The file may be scanned/image-only.');
+  }
+
+  // Build cross-page header/footer registry from pre-scan data
+  const headerFooterRegistry = buildHeaderFooterRegistry(rawPageData);
+
+  // -------------------------------------------------------------------
+  // Pass B: Render — gate + artifact removal + full pipeline per page
+  // -------------------------------------------------------------------
+  const pageTexts = rawPageData.map((_, idx) => {
+    const textContent  = rawTextContents[idx];
+    const operatorList = rawOperatorLists[idx];
+    const [pageWidth, pageHeight] = rawViews[idx];
+    const pageNumber   = idx + 1;
+
+    // Pass 0a: Garbage Gate
+    const gate = runGate(
+      textContent,
+      operatorList,
+      pageWidth,
+      pageHeight,
+      pageNumber,
+      headerFooterRegistry
+    );
+
+    if (gate.isGarbage) {
+      return gate.placeholder;
+    }
+
+    // Pass 0b: clean items already returned by gate (artifact removal applied)
+    // Pass 1-7: full pipeline
+    return renderPage(gate.cleanItems, pageWidth, pageHeight, operatorList);
+  });
+
+  // Filter out pages that are entirely empty after processing
+  const nonEmpty = pageTexts.filter(t => t?.trim());
+  if (nonEmpty.length === 0) {
     throw new Error('No text content found in PDF. The file may be scanned/image-only.');
   }
 
