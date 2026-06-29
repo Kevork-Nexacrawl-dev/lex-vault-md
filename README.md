@@ -5,7 +5,7 @@
 **Repository:** [github.com/Kevork-Nexacrawl-dev/lex-vault-md](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Kevork--Nexacrawl--dev%2Flex--vault--md-181717?logo=github)](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
-[![npm version](https://img.shields.io/badge/npm-v1.1.0-cb3837?logo=npm)](https://www.npmjs.com/package/lex-vault-md)
+[![npm version](https://img.shields.io/badge/npm-v1.1.0-cb3837?logo=npm)](https://www.npmjs.com/package/@nexacrawl/lex-vault-md)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
@@ -31,7 +31,7 @@ Legal PDFs — motions, briefs, exhibits, deposition transcripts, discovery prod
 ## Install
 
 ```bash
-npm install -g lex-vault-md
+npm install -g @nexacrawl/lex-vault-md
 ```
 
 Requires Node.js 18+.
@@ -230,7 +230,7 @@ This project was formerly published as `pdf2md-cli`.
 New install:
 
 ```bash
-npm install -g lex-vault-md
+npm install -g @nexacrawl/lex-vault-md
 ```
 
 New CLI command:
@@ -266,7 +266,7 @@ lex-vault-md batch ./test-folder/
 → No. That is a different project. Search for **Kevork-Nexacrawl-dev/lex-vault-md** or **lex-vault-md nexacrawl**.
 
 **What happened to pdf2md-cli?**
-→ This project was renamed to **LexVaultMD** (`lex-vault-md`) and repositioned for legal teams. The `pdf2md` CLI alias still works temporarily for backward compatibility.
+→ This project was renamed to **LexVaultMD** (`@nexacrawl/lex-vault-md`) and repositioned for legal teams. The `pdf2md` CLI alias still works temporarily for backward compatibility.
 
 **Who maintains this?**
 → [Kevork (Nexacrawl)](https://github.com/Kevork-Nexacrawl-dev) — contact: nexacrawl@gmail.com

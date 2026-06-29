@@ -1,5 +1,5 @@
 {
-  "name": "lex-vault-md",
+  "name": "@nexacrawl/lex-vault-md",
   "version": "1.1.0",
   "description": "LexVaultMD by Nexacrawl — Legal PDF to Markdown CLI for discovery, exhibits, pleadings, case files, and AI-ready legal document workflows.",
   "homepage": "https://github.com/Kevork-Nexacrawl-dev/lex-vault-md",
