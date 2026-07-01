@@ -7,7 +7,7 @@
 
 ## Current Phase
 
-Phase 2 — Builder Agent (active, Build 1 polish complete)
+Phase 2 — Builder Agent (active, --json flag shipped)
 
 ---
 
@@ -15,7 +15,7 @@ Phase 2 — Builder Agent (active, Build 1 polish complete)
 
 The repo is "done enough to sell" when:
 
-- [ ] --json output mode ships and is documented
+- [x] --json output mode ships and is documented
 - [ ] --ocr flag ships with tesseract.js fallback documented
 - [ ] --template flag ships with contract/deposition/filing profiles
 - [x] README has Commercial Use + Data Residency sections
@@ -34,6 +34,7 @@ The repo is "done enough to sell" when:
 | 2026-06-30 | Agent Ops      | Converted the previous GitHub Copilot Competitive Research Architect prompt into a Codex-ready specialist playbook at `agent-playbooks/competitive-research-architect.md`. Added `AGENTS.md` routing guidance for Octocode, CodeGraphContext (CGC), Context7, DeepWiki, GitHub plugin/`gh`, and source-backed competitor research. | pending                                  |
 | 2026-06-30 | Research Build 2 | Completed source-backed competitive architecture pattern analysis with Octocode and local graph validation with CodeGraphContext. Added `research/competitive-architecture-pattern-analysis.md` with competitor architecture diagrams, pattern catalogue, clean-room design lessons, monetization alignment, compliance checklist, source appendix, and a 90-day architecture roadmap. DeepWiki was not exposed as a callable Codex MCP in this session, so it was not used as evidence. | pending                                  |
 | 2026-06-30 | Research Build 3 | Completed Phase 2 code-pattern due diligence. Shallow-cloned primary competitors to a temp research workspace, scanned manifests/licenses/dependencies/network boundaries, cross-checked with GitMCP where useful, and added `research/competitive-architecture-pattern-analysis-phase2-addendum.md`. Main conclusion: complete code-pattern research before ecosyste.ms market mapping; next build slice should be `DocumentEvidence` + `DocumentStats` + `NetworkGate`, then `--json`. | pending                                  |
+| 2026-06-30 | Build Implementer | Shipped --json output flag. New file: `src/utils/json-formatter.js` [CORE-BSL] — converts `pages[]` into `{ metadata, pages, headings, tables }` schema by post-processing Markdown text; zero extractor.js changes. Updated `bin/cli.js` (added `-j, --json` option to local, web, batch, convert commands), `src/commands/local.js`, `src/commands/web.js`, `src/commands/batch.js` — each routes on `options.json`; when flag is absent all output is byte-for-byte identical to pre-flag behaviour. All new code tagged [CORE-BSL]. | acf3da9ee9851bf10ec44824cae5f849eb7902c3 |
 
 ---
 
@@ -55,6 +56,7 @@ The repo is "done enough to sell" when:
 - **npm unscoped name `lex-vault-md` was blocked** — npm rejected the name as too similar to a mistakenly published `lexvaultmd` package (published and immediately deprecated same day). Published as `@nexacrawl/lex-vault-md` instead. CLI bin command remains `lex-vault-md` — users still type `lex-vault-md` in their terminal; the scope only affects the install command. **All future agents must use `@nexacrawl/lex-vault-md` as the install reference** in docs, README, and any generated output.
 - **`lexvaultmd` unpublish blocked for 24 hours** — npm refuses to delete the last version of a package without `--force`, which triggers a 24-hour republish lockout on that name. Can be force-unpublished after 2026-06-30. Low priority — it is already deprecated with a redirect message.
 - **External research tools** — Octocode and CodeGraphContext worked for Research Build 2. After a Codex restart, GitMCP became available and was used for Research Build 3 cross-checks. Context7 is configured but was not needed for source-pattern research. DeepWiki and Repomix still were not exposed as callable Codex MCP tools in the active tool catalog; use them only after they appear.
+- **README --json docs** — The README does not yet have a dedicated `--json` flag section. Park here: add a "JSON Output" section to README in the same session as --ocr or in a dedicated docs pass. Content: usage example, full schema reference, integration-friendly note for legal-tech pipelines.
 
 ---
 
