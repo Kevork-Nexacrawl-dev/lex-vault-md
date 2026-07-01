@@ -2,7 +2,7 @@
 
 **Product:** LexVaultMD (`@nexacrawl/lex-vault-md`)  
 **Developer:** Nexacrawl  
-**Document version:** 1.1  
+**Document version:** 1.2  
 **For use with:** Professional and Team tier licenses  
 
 > **Instructions for the licensee:** This document provides pre-drafted answers to common vendor security questionnaire questions. Review each answer, fill in any bracketed placeholders (e.g., `[YOUR ORGANIZATION NAME]`), and submit to your security or procurement team. Contact [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev) if your questionnaire requires a response not covered here.
@@ -18,10 +18,10 @@
 > LexVaultMD, version `[INSERT CURRENT VERSION — see npm: @nexacrawl/lex-vault-md]`. CLI binary: `lex-vault-md`.
 
 **1.3 Product description**
-> LexVaultMD is a command-line tool that converts PDF documents to structured Markdown or JSON, running entirely on the end user's local hardware. It is designed for use in confidentiality-sensitive legal workflows.
+> LexVaultMD is a command-line tool that converts PDF documents to structured Markdown or JSON, running entirely on the end user's local hardware. It supports both native text extraction and optional OCR via Tesseract.js (local, in-process). It is designed for use in confidentiality-sensitive legal workflows.
 
 **1.4 Is this a SaaS product, on-premises software, or both?**
-> On-premises software only. LexVaultMD is distributed as an npm package and (for Professional/Team tier) as a precompiled Windows binary and MSI installer (Authenticode signing in progress). There is no SaaS component, hosted API, or cloud-processing option.
+> On-premises software only. LexVaultMD is distributed as an npm package and (for Professional/Team tier) as a precompiled Windows binary and MSI installer (Authenticode signing in progress). There is no SaaS component, hosted API, or cloud-processing option. The optional OCR feature (`--ocr`) runs entirely in-process using Tesseract.js — no external OCR service is called.
 
 ---
 
@@ -34,10 +34,10 @@
 > Data never leaves the end user's machine. Input files are read from local disk; output files are written to local disk. No data is stored on any Nexacrawl or third-party system.
 
 **2.3 Is data transmitted to any external service during processing?**
-> No. Document content, extracted text, metadata, and file paths are not transmitted to any external server, API, or service during processing. See the separate "No Data Transmission Statement" for full detail and verification guidance.
+> No. Document content, extracted text, metadata, and file paths are not transmitted to any external server, API, or service during processing. This applies to both the native text extraction path and the optional OCR path (`--ocr`) — Tesseract.js runs entirely in-process on the local machine. No page images or extracted content leave the machine during OCR processing. See the separate "No Data Transmission Statement" for full detail and verification guidance.
 
 **2.4 Does the product use any sub-processors or third-party services that receive customer data?**
-> No. LexVaultMD does not send customer data to any sub-processor or third-party service.
+> No. LexVaultMD does not send customer data to any sub-processor or third-party service. All processing libraries — including the Tesseract.js OCR engine — run locally as bundled npm dependencies.
 
 **2.5 Does the product store or transmit data in the cloud?**
 > No. There is no cloud component in LexVaultMD.
@@ -56,7 +56,7 @@
 > LexVaultMD is a local CLI tool. Authentication is managed by the host operating system's user account controls. The tool does not implement its own authentication layer.
 
 **3.2 Does the product require network access or firewall rules?**
-> No inbound or outbound firewall rules are required for core document processing. The `lex-vault-md web <url>` command makes an outbound HTTP GET to the URL specified by the user; all other commands require no network access.
+> No inbound or outbound firewall rules are required for core document processing, including OCR. The `lex-vault-md web <url>` command makes an outbound HTTP GET to the URL specified by the user; all other commands — including `--ocr` — require no network access.
 
 **3.3 Does the product support role-based access control (RBAC)?**
 > LexVaultMD relies on OS-level file permissions for access control. There is no application-level RBAC. Team tier licenses include admin policy presets that allow organizations to enforce output directory and log path policies.
@@ -69,13 +69,13 @@
 ## Section 4 — Network and Infrastructure
 
 **4.1 What are the network connectivity requirements?**
-> None required for local, batch, or convert commands. The `web` subcommand requires outbound HTTP/HTTPS to the URL from which the PDF is being fetched.
+> None required for local, batch, or convert commands, including when using `--ocr`. The `web` subcommand requires outbound HTTP/HTTPS to the URL from which the PDF is being fetched.
 
 **4.2 Does the product call home, send telemetry, or check for updates automatically?**
-> No. LexVaultMD does not include telemetry, crash reporting, or automatic update mechanisms. It does not initiate any network connections at startup, shutdown, or during idle operation.
+> No. LexVaultMD does not include telemetry, crash reporting, or automatic update mechanisms. It does not initiate any network connections at startup, shutdown, or during idle operation. This includes when `--ocr` is active — Tesseract.js worker initialization is entirely local.
 
 **4.3 Does the product use CDNs, third-party APIs, or managed services?**
-> No. All processing uses open-source libraries bundled with the npm package. No CDN or third-party API is called during document processing.
+> No. All processing — including OCR via Tesseract.js — uses open-source libraries bundled with the npm package. No CDN or third-party API is called during document processing.
 
 **4.4 What ports does the product use?**
 > LexVaultMD does not open or listen on any ports. It is a command-line process that reads from disk and writes to disk.
@@ -94,7 +94,7 @@
 > LexVaultMD is developed by Nexacrawl with continuous dependency auditing (`npm audit`) applied at each release. Source code is available for review under BSL 1.1. Security findings may be reported to [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev).
 
 **5.4 What open-source licenses are used by the product's dependencies?**
-> The full dependency license list is provided in the SBOM. Primary PDF-parsing dependencies use MIT and Apache 2.0 licenses. A human-readable license summary is available on request.
+> The full dependency license list is provided in the SBOM. Primary PDF-parsing dependencies use MIT and Apache 2.0 licenses. Tesseract.js is licensed under Apache 2.0. A human-readable license summary is available on request.
 
 ---
 
@@ -113,7 +113,7 @@
 | Enterprise | Custom SLA per agreement |
 
 **6.3 How are security patches distributed?**
-> Security patches are published as new npm package versions and (for Professional/Team) as updated signed binary artifacts. Licensees are notified by email on request. Customers are responsible for applying updates on their own systems.
+> Security patches are published as new npm package versions and (for Professional/Team) as updated binary artifacts. Licensees are notified by email on request. Customers are responsible for applying updates on their own systems.
 
 ---
 
@@ -123,10 +123,10 @@
 > Not at this time. LexVaultMD is a locally-deployed CLI tool; its architecture eliminates the cloud-processing attack surface that these certifications primarily address. Organizations requiring formal certification are encouraged to review the source code, SBOM, and No Data Transmission Statement as verification inputs.
 
 **7.2 Is the product GDPR-compliant?**
-> Nexacrawl does not process or receive personal data from end users. As LexVaultMD processes documents locally on the licensee's own hardware, the licensee's own data governance policies apply. LexVaultMD does not introduce a new data processor relationship.
+> Nexacrawl does not process or receive personal data from end users. As LexVaultMD processes documents locally on the licensee's own hardware — including OCR processing, which runs in-process — the licensee's own data governance policies apply. LexVaultMD does not introduce a new data processor relationship.
 
 **7.3 Is the product HIPAA-compliant?**
-> LexVaultMD's offline architecture means it does not transmit or store PHI on behalf of the licensee. The licensee is responsible for ensuring that their own infrastructure and workflows meet applicable HIPAA requirements. LexVaultMD does not itself create a Business Associate relationship.
+> LexVaultMD's offline architecture means it does not transmit or store PHI on behalf of the licensee. Both the native extraction path and the `--ocr` path run locally with no external transmission. The licensee is responsible for ensuring that their own infrastructure and workflows meet applicable HIPAA requirements. LexVaultMD does not itself create a Business Associate relationship.
 
 **7.4 Does the product have a vulnerability disclosure policy?**
 > Security issues may be reported to [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev). The source repository is available at [https://github.com/Kevork-Nexacrawl-dev/lex-vault-md](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md) for independent security review.

@@ -18,7 +18,7 @@ The result is a PDF-to-Markdown pipeline that legal IT already understands — s
 
 - Full BSL 1.1 source code via npm (`@nexacrawl/lex-vault-md`)
 - Local, web, and batch conversion commands
-- JSON output mode (`--json`)
+- JSON output mode (`--json`) — structured JSON with metadata, per-page content, heading index, and table index
 - Standard Markdown output
 - Community support (GitHub Issues)
 
@@ -35,13 +35,14 @@ lex-vault-md local brief.pdf
 
 Everything in Community, plus:
 
+- **OCR fallback for scanned PDFs** — `--ocr` flag enables per-page Tesseract.js routing; only activates on pages that genuinely need it; runs entirely in-process with no data leaving the machine
 - **Verified artifact checksums** — SHA-256 and SHA-512 for all distributed artifacts
 - **Signed Windows binary** *(coming before GA — Authenticode-signed .exe for zero-warning deployment via Windows Defender and endpoint security)*
 - **MSI installer + silent install support** — deploy via Group Policy, SCCM, or Intune; `msiexec /quiet /i LexVaultMD.msi`
 - **WinGet manifest** — enterprise winget catalog entry for managed software inventories
 - **Software Bill of Materials (SBOM)** — CycloneDX JSON listing every dependency, version, and license
 - **Offline architecture diagram** — one-page visual showing data flow (local disk → CPU → output file; no network hops)
-- **"No Data Transmission" statement** — signed PDF declaration suitable for attaching to vendor questionnaire responses
+- **"No Data Transmission" statement** — declaration suitable for attaching to vendor questionnaire responses; covers both native text extraction and the OCR path
 - **Pre-answered vendor questionnaire template** — covers data storage, encryption, network access, sub-processors, incident response; ready for your security team to review and submit
 - **72-hour email support SLA** — direct support channel for deployment and integration questions
 
@@ -95,6 +96,8 @@ Everything in Team, plus:
 
 **Shorten your security review** with a deployment model legal IT already understands: signed binaries, offline operation, no cloud processing, and a ready-to-send vendor security packet.
 
+**Data residency in practice:** LexVaultMD processes all document content locally. This applies to both native text extraction and the optional OCR path — Tesseract.js runs entirely in-process. There is no SaaS dependency and no vendor-side storage. The `local` and `batch` commands process PDFs on the machine where the CLI is running. The `web` command downloads the PDF from the URL you supply, then runs the same local extraction pipeline — the document content is never forwarded to a third party.
+
 Relevant professional obligations:
 
 - **ABA Model Rule 1.6** (Confidentiality of Information) — requires reasonable measures to prevent unauthorized disclosure of client information; local processing eliminates the network-transmission vector.
@@ -104,10 +107,23 @@ Relevant professional obligations:
 
 ---
 
+## Licensing
+
+LexVaultMD is source-available under BSL 1.1. Free for non-commercial and internal evaluation use. A commercial license is required for use in commercial products or services.
+
+The Change Date is **2029-01-01** — after that date the code automatically converts to the MIT license.
+
+For commercial licensing and vendor documentation: [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev)
+
+---
+
 ## Frequently Asked Questions
 
 **Does LexVaultMD send any data to the internet during processing?**
-No. Document processing is entirely local. The only network activity in the tool is optional: fetching a PDF from a URL when you use the `lex-vault-md web <url>` command. The fetched document is processed locally. No text, metadata, or extracted content is transmitted to any external service.
+No. Document processing is entirely local. This applies to both native extraction and the `--ocr` flag — Tesseract.js runs in-process on the local machine. The only network activity is optional: fetching a PDF from a URL when you use the `lex-vault-md web <url>` command. The fetched document is processed locally. No text, metadata, or extracted content is transmitted to any external service.
+
+**Does OCR use a cloud service?**
+No. `--ocr` uses Tesseract.js, which runs entirely in-process on the local machine. No page images, extracted text, or document metadata are sent to any external server. This is documented in the No Data Transmission Statement and Vendor Security Packet.
 
 **Can I use the Community (free) version in a commercial law firm context?**
 Yes. BSL 1.1 permits internal use at any organization. The paid tiers add deployment artifacts (signed binaries, MSI, SBOM, security documentation) that matter for enterprise rollout and vendor compliance — not license restrictions on internal use.
