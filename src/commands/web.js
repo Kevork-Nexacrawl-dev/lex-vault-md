@@ -9,6 +9,9 @@ import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
 // [PRO-CANDIDATE] OCR fallback
 import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
+// [PRO-CANDIDATE] Template profiles
+import { resolveProfile } from '../services/template-profiles.js';
+import { applyTemplate }  from '../utils/template-formatter.js';
 import { log } from '../utils/logger.js';
 
 let clipboardy;
@@ -21,7 +24,7 @@ try {
 }
 
 /**
- * lex-vault-md web <url> [--output <file>] [--clipboard] [--json] [--ocr]
+ * lex-vault-md web <url> [--output <file>] [--clipboard] [--json] [--ocr] [--template <profile>]
  */
 export async function webCommand(url, options) {
   // Basic URL validation
@@ -35,6 +38,15 @@ export async function webCommand(url, options) {
 
   if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
     log.error('Only http:// and https:// URLs are supported.');
+    process.exit(1);
+  }
+
+  // [PRO-CANDIDATE] Resolve template profile early so invalid names fail fast
+  let profile;
+  try {
+    profile = resolveProfile(options.template);
+  } catch (err) {
+    log.error(err.message);
     process.exit(1);
   }
 
@@ -78,9 +90,17 @@ export async function webCommand(url, options) {
       pages = await applyOCRFallback(pages, [], options);
     }
 
+    // [PRO-CANDIDATE] --template branch: apply profile post-processing
+    if (profile) {
+      spinner.text = `Applying ${profile.name} template profile...`;
+      pages = applyTemplate(pages, profile);
+    }
+
     // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
     if (options.json) {
       const jsonObj  = formatJSON(pages, url);
+      // Surface active profile in JSON metadata when --template is used
+      if (profile) jsonObj.metadata.profile = profile.name;
       const outFile  = options.output || deriveJsonFilename(url);
       const outPath  = path.resolve(outFile);
       const jsonStr  = JSON.stringify(jsonObj, null, 2);
@@ -92,7 +112,7 @@ export async function webCommand(url, options) {
       return;
     }
 
-    // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+    // Default Markdown path — byte-for-byte identical to pre-flag behaviour when no profile
     const markdown = formatMarkdown(pages, url);
     spinner.succeed(`Extracted ${pages.length} page(s) from remote PDF`);
 

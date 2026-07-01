@@ -7,10 +7,13 @@ import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 import { formatJSON } from '../utils/json-formatter.js';
 // [PRO-CANDIDATE] OCR fallback
 import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
+// [PRO-CANDIDATE] Template profiles
+import { resolveProfile } from '../services/template-profiles.js';
+import { applyTemplate }  from '../utils/template-formatter.js';
 import { log } from '../utils/logger.js';
 
 /**
- * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>] [--json] [--ocr]
+ * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>] [--json] [--ocr] [--template <profile>]
  *
  * Converts every PDF in <folder> to Markdown (default) or JSON (--json).
  * Output defaults to the same folder as the source PDFs.
@@ -26,6 +29,15 @@ export async function batchCommand(folder, options) {
 
   if (!fs.statSync(resolvedFolder).isDirectory()) {
     log.error(`Not a directory: ${resolvedFolder}`);
+    process.exit(1);
+  }
+
+  // [PRO-CANDIDATE] Resolve template profile early so invalid names fail fast
+  let profile;
+  try {
+    profile = resolveProfile(options.template);
+  } catch (err) {
+    log.error(err.message);
     process.exit(1);
   }
 
@@ -49,9 +61,10 @@ export async function batchCommand(folder, options) {
   }
 
   // [CORE-BSL] surface output mode in progress log
-  const outputMode = options.json ? 'JSON' : 'Markdown';
-  const ocrNote   = options.ocr  ? ' + OCR fallback' : '';
-  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)} → outputting ${outputMode}${ocrNote}`);
+  const outputMode   = options.json     ? 'JSON'             : 'Markdown';
+  const ocrNote      = options.ocr      ? ' + OCR fallback'  : '';
+  const templateNote = profile          ? ` + ${profile.name} profile` : '';
+  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)} → outputting ${outputMode}${ocrNote}${templateNote}`);
   log.dim(`Output → ${outDir}`);
   console.log();
 
@@ -71,10 +84,11 @@ export async function batchCommand(folder, options) {
   const errors = [];
 
   // Process in chunks of <concurrency>
+  // profile is resolved once and passed to every processOne call
   try {
     for (let i = 0; i < pdfs.length; i += concurrency) {
       const chunk = pdfs.slice(i, i + concurrency);
-      await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors, options)));
+      await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors, options, profile)));
     }
   } finally {
     // [PRO-CANDIDATE] Always terminate OCR workers after batch
@@ -96,8 +110,8 @@ export async function batchCommand(folder, options) {
   }
 }
 
-// [CORE-BSL] options passed through to support --json and --ocr per-file routing
-async function processOne(filename, sourceDir, outDir, results, errors, options) {
+// [CORE-BSL] options + profile passed through to support --json, --ocr, --template per-file routing
+async function processOne(filename, sourceDir, outDir, results, errors, options, profile) {
   const inputPath = path.join(sourceDir, filename);
 
   // [CORE-BSL] derive output filename based on mode
@@ -124,14 +138,21 @@ async function processOne(filename, sourceDir, outDir, results, errors, options)
       pages = await applyOCRFallback(pages, [], options);
     }
 
+    // [PRO-CANDIDATE] --template branch: apply profile post-processing
+    if (profile) {
+      pages = applyTemplate(pages, profile);
+    }
+
     // [CORE-BSL] --json branch
     if (options.json) {
       const jsonObj = formatJSON(pages, filename);
+      // Surface active profile in JSON metadata when --template is used
+      if (profile) jsonObj.metadata.profile = profile.name;
       const jsonStr = JSON.stringify(jsonObj, null, 2);
       fs.writeFileSync(outputPath, jsonStr, 'utf8');
       spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${jsonObj.metadata.charCount} chars)`);
     } else {
-      // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+      // Default Markdown path — byte-for-byte identical to pre-flag behaviour when no profile
       const markdown = formatMarkdown(pages, filename);
       fs.writeFileSync(outputPath, markdown, 'utf8');
       spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${markdown.length} chars)`);

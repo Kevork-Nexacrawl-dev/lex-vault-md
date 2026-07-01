@@ -25,6 +25,11 @@ Examples:
   lex-vault-md batch ./case_files/ --json
   lex-vault-md local ./deposition.pdf --ocr
   lex-vault-md batch ./case_files/ --ocr
+  lex-vault-md local ./nda.pdf --template contract
+  lex-vault-md local ./depo.pdf --template deposition
+  lex-vault-md local ./motion.pdf --template filing
+  lex-vault-md local ./depo.pdf --ocr --template deposition
+  lex-vault-md local ./nda.pdf --template contract --json
 
   # Shorthand (auto-detects local path vs URL):
   lex-vault-md ./motion.pdf
@@ -42,6 +47,8 @@ program
   .option('-j, --json',          'Output structured JSON instead of Markdown')
   // [PRO-CANDIDATE]
   .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
+  // [PRO-CANDIDATE]
+  .option('-t, --template <profile>', 'Apply a legal document profile: contract | deposition | filing')
   .action(localCommand);
 
 // ── web <url> ────────────────────────────────────────────────────────────────
@@ -54,6 +61,8 @@ program
   .option('-j, --json',          'Output structured JSON instead of Markdown')
   // [PRO-CANDIDATE]
   .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
+  // [PRO-CANDIDATE]
+  .option('-t, --template <profile>', 'Apply a legal document profile: contract | deposition | filing')
   .action(webCommand);
 
 // ── batch <folder> ───────────────────────────────────────────────────────────
@@ -66,6 +75,8 @@ program
   .option('-j, --json',              'Output structured JSON instead of Markdown (writes .json files)')
   // [PRO-CANDIDATE]
   .option('-r, --ocr',               'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
+  // [PRO-CANDIDATE]
+  .option('-t, --template <profile>', 'Apply a legal document profile: contract | deposition | filing')
   .action(batchCommand);
 
 // ── Shorthand fallback: lex-vault-md <filepath-or-url> ───────────────────────
@@ -78,6 +89,8 @@ program
   .option('-j, --json',          'Output structured JSON instead of Markdown')
   // [PRO-CANDIDATE]
   .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
+  // [PRO-CANDIDATE]
+  .option('-t, --template <profile>', 'Apply a legal document profile: contract | deposition | filing')
   .action((input, options) => {
     const isUrl = /^https?:\/\//i.test(input);
     if (isUrl) {

@@ -8,6 +8,9 @@ import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
 // [PRO-CANDIDATE] OCR fallback
 import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
+// [PRO-CANDIDATE] Template profiles
+import { resolveProfile } from '../services/template-profiles.js';
+import { applyTemplate }  from '../utils/template-formatter.js';
 import { log } from '../utils/logger.js';
 
 // clipboard support (optional — graceful fallback if not installed)
@@ -20,7 +23,7 @@ try {
 }
 
 /**
- * lex-vault-md local <filepath> [--output <file>] [--clipboard] [--json] [--ocr]
+ * lex-vault-md local <filepath> [--output <file>] [--clipboard] [--json] [--ocr] [--template <profile>]
  */
 export async function localCommand(filepath, options) {
   const resolved = path.resolve(filepath);
@@ -34,6 +37,15 @@ export async function localCommand(filepath, options) {
   // Validate .pdf extension
   if (path.extname(resolved).toLowerCase() !== '.pdf') {
     log.error(`Not a PDF file: ${resolved}`);
+    process.exit(1);
+  }
+
+  // [PRO-CANDIDATE] Resolve template profile early so invalid names fail fast
+  let profile;
+  try {
+    profile = resolveProfile(options.template);
+  } catch (err) {
+    log.error(err.message);
     process.exit(1);
   }
 
@@ -60,14 +72,20 @@ export async function localCommand(filepath, options) {
     // [PRO-CANDIDATE] --ocr branch: apply per-page OCR routing after extraction
     if (options.ocr) {
       spinner.text = 'Applying OCR fallback where needed...';
-      // rawPageMeta is empty here — no page images available in CLI local mode.
-      // applyOCRFallback gracefully handles missing imageBuffer per page.
       pages = await applyOCRFallback(pages, [], options);
+    }
+
+    // [PRO-CANDIDATE] --template branch: apply profile post-processing
+    if (profile) {
+      spinner.text = `Applying ${profile.name} template profile...`;
+      pages = applyTemplate(pages, profile);
     }
 
     // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
     if (options.json) {
       const jsonObj  = formatJSON(pages, path.basename(resolved));
+      // Surface active profile in JSON metadata when --template is used
+      if (profile) jsonObj.metadata.profile = profile.name;
       const outFile  = options.output || deriveJsonFilename(resolved);
       const outPath  = path.resolve(outFile);
       const jsonStr  = JSON.stringify(jsonObj, null, 2);
@@ -79,7 +97,7 @@ export async function localCommand(filepath, options) {
       return;
     }
 
-    // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+    // Default Markdown path — byte-for-byte identical to pre-flag behaviour when no profile
     const markdown = formatMarkdown(pages, path.basename(resolved));
     spinner.succeed(`Extracted ${pages.length} page(s)`);
 
