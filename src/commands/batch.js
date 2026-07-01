@@ -3,12 +3,14 @@ import path from 'path';
 import ora from 'ora';
 import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
+// [CORE-BSL] JSON output support
+import { formatJSON } from '../utils/json-formatter.js';
 import { log } from '../utils/logger.js';
 
 /**
- * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>]
+ * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>] [--json]
  *
- * Converts every PDF in <folder> to Markdown.
+ * Converts every PDF in <folder> to Markdown (default) or JSON (--json).
  * Output defaults to the same folder as the source PDFs.
  */
 export async function batchCommand(folder, options) {
@@ -44,7 +46,9 @@ export async function batchCommand(folder, options) {
     process.exit(0);
   }
 
-  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)}`);
+  // [CORE-BSL] surface output mode in progress log
+  const outputMode = options.json ? 'JSON' : 'Markdown';
+  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)} → outputting ${outputMode}`);
   log.dim(`Output → ${outDir}`);
   console.log();
 
@@ -55,7 +59,7 @@ export async function batchCommand(folder, options) {
   // Process in chunks of <concurrency>
   for (let i = 0; i < pdfs.length; i += concurrency) {
     const chunk = pdfs.slice(i, i + concurrency);
-    await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors)));
+    await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors, options)));
   }
 
   // Summary
@@ -73,9 +77,14 @@ export async function batchCommand(folder, options) {
   }
 }
 
-async function processOne(filename, sourceDir, outDir, results, errors) {
-  const inputPath  = path.join(sourceDir, filename);
-  const outputName = filename.replace(/\.pdf$/i, '.md');
+// [CORE-BSL] options passed through to support --json per-file routing
+async function processOne(filename, sourceDir, outDir, results, errors, options) {
+  const inputPath = path.join(sourceDir, filename);
+
+  // [CORE-BSL] derive output filename based on mode
+  const outputName = options.json
+    ? filename.replace(/\.pdf$/i, '.json')
+    : filename.replace(/\.pdf$/i, '.md');
   const outputPath = path.join(outDir, outputName);
 
   // Skip if already converted
@@ -90,14 +99,24 @@ async function processOne(filename, sourceDir, outDir, results, errors) {
   try {
     const buffer = fs.readFileSync(inputPath);
     const pages  = await extractPDF(buffer, filename);
-    const markdown = formatMarkdown(pages, filename);
 
-    fs.writeFileSync(outputPath, markdown, 'utf8');
-    spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${markdown.length} chars)`);
+    // [CORE-BSL] --json branch
+    if (options.json) {
+      const jsonObj = formatJSON(pages, filename);
+      const jsonStr = JSON.stringify(jsonObj, null, 2);
+      fs.writeFileSync(outputPath, jsonStr, 'utf8');
+      spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${jsonObj.metadata.charCount} chars)`);
+    } else {
+      // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+      const markdown = formatMarkdown(pages, filename);
+      fs.writeFileSync(outputPath, markdown, 'utf8');
+      spinner.succeed(`${filename} → ${outputName}  (${pages.length} page(s), ${markdown.length} chars)`);
+    }
+
     results.converted++;
   } catch (err) {
     let reason = err.message;
-    if (err.message.includes('password'))      reason = 'encrypted PDF — skipped';
+    if (err.message.includes('password'))        reason = 'encrypted PDF — skipped';
     if (err.message.includes('No text content')) reason = 'image-only PDF — no extractable text';
 
     spinner.fail(`${filename} — ${reason}`);

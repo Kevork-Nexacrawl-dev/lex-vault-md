@@ -5,6 +5,8 @@ import axios from 'axios';
 import ora from 'ora';
 import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
+// [CORE-BSL] JSON output support
+import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
 import { log } from '../utils/logger.js';
 
 let clipboardy;
@@ -17,7 +19,7 @@ try {
 }
 
 /**
- * lex-vault-md web <url> [--output <file>] [--clipboard]
+ * lex-vault-md web <url> [--output <file>] [--clipboard] [--json]
  */
 export async function webCommand(url, options) {
   // Basic URL validation
@@ -54,11 +56,25 @@ export async function webCommand(url, options) {
 
     spinner.text = 'Extracting text and detecting headings...';
     const buffer = Buffer.from(response.data);
-    const sourceName = deriveOutputFilename(url).replace('.md', '.pdf');
 
     const pages = await extractPDF(buffer, url);
-    const markdown = formatMarkdown(pages, url);
 
+    // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
+    if (options.json) {
+      const jsonObj  = formatJSON(pages, url);
+      const outFile  = options.output || deriveJsonFilename(url);
+      const outPath  = path.resolve(outFile);
+      const jsonStr  = JSON.stringify(jsonObj, null, 2);
+
+      spinner.succeed(`Extracted ${pages.length} page(s) from remote PDF`);
+      fs.writeFileSync(outPath, jsonStr, 'utf8');
+      log.success(`Saved JSON → ${outPath}`);
+      log.dim(`${pages.length} pages | ${jsonObj.metadata.charCount} chars | ${path.basename(outPath)}`);
+      return;
+    }
+
+    // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+    const markdown = formatMarkdown(pages, url);
     spinner.succeed(`Extracted ${pages.length} page(s) from remote PDF`);
 
     // Write output file

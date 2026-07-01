@@ -4,6 +4,8 @@ import { createRequire } from 'module';
 import ora from 'ora';
 import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
+// [CORE-BSL] JSON output support
+import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
 import { log } from '../utils/logger.js';
 
 // clipboard support (optional — graceful fallback if not installed)
@@ -16,7 +18,7 @@ try {
 }
 
 /**
- * lex-vault-md local <filepath> [--output <file>] [--clipboard]
+ * lex-vault-md local <filepath> [--output <file>] [--clipboard] [--json]
  */
 export async function localCommand(filepath, options) {
   const resolved = path.resolve(filepath);
@@ -40,8 +42,23 @@ export async function localCommand(filepath, options) {
     spinner.text = 'Extracting text and detecting headings...';
 
     const pages = await extractPDF(buffer, path.basename(resolved));
-    const markdown = formatMarkdown(pages, path.basename(resolved));
 
+    // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
+    if (options.json) {
+      const jsonObj  = formatJSON(pages, path.basename(resolved));
+      const outFile  = options.output || deriveJsonFilename(resolved);
+      const outPath  = path.resolve(outFile);
+      const jsonStr  = JSON.stringify(jsonObj, null, 2);
+
+      spinner.succeed(`Extracted ${pages.length} page(s)`);
+      fs.writeFileSync(outPath, jsonStr, 'utf8');
+      log.success(`Saved JSON → ${outPath}`);
+      log.dim(`${pages.length} pages | ${jsonObj.metadata.charCount} chars | ${path.basename(outPath)}`);
+      return;
+    }
+
+    // Default Markdown path — byte-for-byte identical to pre-flag behaviour
+    const markdown = formatMarkdown(pages, path.basename(resolved));
     spinner.succeed(`Extracted ${pages.length} page(s)`);
 
     // Write output file
