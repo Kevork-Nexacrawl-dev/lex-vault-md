@@ -19,7 +19,6 @@ Thumbs.db
 npm-debug.log*
 
 # Editor
-.vscode/
 .idea/
 
 # Private agent customizations (local only — not committed to the repo)
@@ -29,4 +28,6 @@ npm-debug.log*
 docs/
 pdf2md-cli.code-workspace
 /terminals
-
+agent-playbooks
+research
+mcps

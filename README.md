@@ -1,6 +1,6 @@
-# LexVaultMD — Legal PDF to Markdown CLI for Litigation Teams
+# LexVaultMD — Offline Legal PDF to Markdown CLI for Litigation and E-Discovery
 
-> **LexVaultMD by Nexacrawl** converts legal PDFs into clean, structured, AI-ready Markdown for discovery, exhibits, pleadings, case files, and litigation review.
+> **LexVaultMD by Nexacrawl** is an offline legal PDF to Markdown converter for litigation teams, e-discovery workflows, exhibits, pleadings, contracts, case files, and AI-assisted document review.
 
 **Repository:** [github.com/Kevork-Nexacrawl-dev/lex-vault-md](https://github.com/Kevork-Nexacrawl-dev/lex-vault-md)
 
@@ -13,9 +13,17 @@
 
 ---
 
+## About LexVaultMD
+
+LexVaultMD converts legal PDFs into clean, structured, AI-ready Markdown without sending confidential documents to a cloud API. It is built for law firms, legal operations teams, litigation support vendors, e-discovery providers, and builders who need local PDF extraction for sensitive legal documents.
+
+Use it when you need to turn motions, briefs, exhibits, deposition transcripts, discovery productions, contracts, regulatory filings, or case files into Markdown for review, search, knowledge bases, or LLM workflows.
+
+---
+
 ## Why LexVaultMD?
 
-Legal PDFs — motions, briefs, exhibits, deposition transcripts, discovery productions — are structurally rich but extraction-hostile. **LexVaultMD** reads the PDF transform matrix to detect real heading hierarchy, strips headers/footers/watermarks, detects multi-column layouts, extracts tables, and runs entirely offline with zero API calls. The output is clean, structured Markdown that is immediately usable for AI-assisted review, case management, and litigation workflows.
+Legal PDFs are structurally rich but extraction-hostile. **LexVaultMD** reads the PDF transform matrix to detect real heading hierarchy, strips headers/footers/watermarks, detects multi-column layouts, extracts tables, and runs locally for confidential document workflows. The output is clean, structured Markdown that is immediately usable for AI-assisted review, case management, discovery, and litigation workflows.
 
 | | **LexVaultMD** (Nexacrawl) | Typical converters |
 |---|---|---|
@@ -25,6 +33,26 @@ Legal PDFs — motions, briefs, exhibits, deposition transcripts, discovery prod
 | Offline | Yes — no internet required for local/batch | Varies |
 | Output | Structured `.md` with page markers, metadata header | Plain text dump |
 | Legal Artifacts | Header/footer removal, watermark stripping, margin noise | Not handled |
+
+---
+
+## Data Residency
+
+LexVaultMD is local-first by design. The `local` and `batch` commands process PDFs on the machine where the CLI is running and do not send document content to Nexacrawl, cloud APIs, telemetry endpoints, or third-party processors.
+
+The `web` command only downloads the PDF from the URL you provide, then runs the same local extraction pipeline. Use `local` or `batch` for confidential, privileged, sealed, or client-restricted documents where external network access is not permitted.
+
+This makes LexVaultMD suitable for legal teams that need auditable, offline PDF extraction for litigation, discovery, contract review, case files, and AI-ready document workflows.
+
+---
+
+## Commercial Use
+
+LexVaultMD is licensed under the Business Source License 1.1. Non-production use, evaluation, modification, and redistribution are allowed under the terms in [LICENSE](LICENSE). Production or commercial use requires a separate commercial license from Nexacrawl.
+
+Commercial licensing is intended for law firms, legal operations teams, litigation support vendors, e-discovery providers, and organizations that need written vendor assurances for internal procurement.
+
+For commercial licensing, offline deployment, vendor review, or data-handling documentation, contact **nexacrawl@gmail.com**.
 
 ---
 
@@ -40,14 +68,51 @@ Requires Node.js 18+.
 
 ## Quick Start
 
+### 1. Install the CLI
+
 ```bash
-# Convert a local legal PDF
+npm install -g @nexacrawl/lex-vault-md
+```
+
+### 2. Convert one PDF file
+
+If your PDF is named `file.pdf` and it is in the folder where your terminal is open, run:
+
+```bash
+lex-vault-md local ./file.pdf
+```
+
+That creates:
+
+```bash
+file.md
+```
+
+For a legal document named `motion.pdf`, run:
+
+```bash
 lex-vault-md local ./motion.pdf
+```
 
-# Fetch and convert a remote PDF
+### 3. Convert a PDF from the web
+
+If the PDF has a public URL, run:
+
+```bash
 lex-vault-md web https://example.com/brief.pdf
+```
 
-# Batch convert an entire discovery folder
+### 4. Convert a whole folder
+
+If your folder is named `discovery` and contains multiple PDF files, run:
+
+```bash
+lex-vault-md batch ./discovery/
+```
+
+That writes `.md` files next to the PDFs. To write the Markdown files into a separate folder named `case-vault`, run:
+
+```bash
 lex-vault-md batch ./discovery/ --output ./case-vault/
 ```
 
@@ -164,14 +229,14 @@ Paragraph text flows here with proper line breaks
 and paragraph spacing preserved from the original PDF.
 ```
 
-**Heading detection** maps font sizes from the PDF's transform matrix:
+**Heading detection** maps font sizes from the PDF's transform matrix relative to the page's most common body-text size:
 
-| Font size | Markdown heading |
+| Font-size ratio | Markdown output |
 |---|---|
-| ≥ 22px | `# H1` |
-| ≥ 18px | `## H2` |
-| ≥ 15px | `### H3` |
-| > 14px (distinct size) | `#### H4` |
+| ≥ 1.5x body text | `# H1` |
+| ≥ 1.2x body text | `## H2` |
+| ≥ 1.05x body text | `### H3` |
+| < 0.8x body text | Treated as caption or footnote text |
 
 ---
 

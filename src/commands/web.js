@@ -8,15 +8,16 @@ import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 import { log } from '../utils/logger.js';
 
 let clipboardy;
+const require = createRequire(import.meta.url);
+const packageJson = require('../../package.json');
 try {
-  const require = createRequire(import.meta.url);
   clipboardy = require('clipboardy');
 } catch {
   clipboardy = null;
 }
 
 /**
- * pdf2md web <url> [--output <file>] [--clipboard]
+ * lex-vault-md web <url> [--output <file>] [--clipboard]
  */
 export async function webCommand(url, options) {
   // Basic URL validation
@@ -40,7 +41,7 @@ export async function webCommand(url, options) {
       responseType: 'arraybuffer',
       timeout: 30_000,
       headers: {
-        'User-Agent': 'pdf2md-cli/1.0.0',
+        'User-Agent': `lex-vault-md/${packageJson.version}`,
         'Accept': 'application/pdf,*/*',
       },
     });

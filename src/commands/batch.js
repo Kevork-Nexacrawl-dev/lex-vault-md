@@ -6,7 +6,7 @@ import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 import { log } from '../utils/logger.js';
 
 /**
- * pdf2md batch <folder> [--output <dir>] [--concurrency <n>]
+ * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>]
  *
  * Converts every PDF in <folder> to Markdown.
  * Output defaults to the same folder as the source PDFs.

@@ -36,11 +36,25 @@ src/utils/logger.js         # chalk-based log helpers: log.info / success / warn
 ## Key Conventions
 
 - **ESM only** (`"type": "module"` in package.json). Use `import`/`export` everywhere. Use `createRequire(import.meta.url)` for CJS-only packages.
-- **Heading thresholds** live in `HEADING_THRESHOLDS` at the top of `extractor.js`. Font sizes come from `item.transform[0]` (scale X). Adjust thresholds there, not in the render loop.
+- **Heading detection** is body-size relative in `extractor.js`: the page body size is the mode of `item.transform[0]` values, then headings are detected by ratio against that body size.
 - **`pdf-parse` import path**: must be `pdf-parse/lib/pdf-parse.js`, not the package root — the root entry point triggers a test-file read that throws in ESM.
 - **`clipboardy`** is an optional peer dependency (not in `package.json`). Both commands gracefully fall back with a warning if it's absent. Do not add it to `dependencies`.
 - **CLI binary names**: `lex-vault-md` (primary) and `pdf2md` (legacy alias) — both point to `bin/cli.js`.
 - Errors always call `process.exit(1)` after `log.error(...)`. No thrown exceptions bubble out of commands.
+
+## Research & Tool Strategy
+
+Use [`agent-playbooks/competitive-research-architect.md`](agent-playbooks/competitive-research-architect.md) when the task is competitor research, architecture validation, OCR/layout/table extraction research, or build-plan refinement from external evidence.
+
+Tool routing for research-heavy work:
+
+- **Octocode**: primary tool for source-backed competitor research across GitHub repositories, pull requests, npm packages, and local code. Prefer source files over README claims.
+- **CodeGraphContext (CGC)**: use for local graph indexing, call-chain analysis, impact analysis, dead-code discovery, and relationship questions after the repo has been indexed.
+- **Context7**: use for current library/framework/API docs when implementation depends on exact current syntax or behavior.
+- **DeepWiki**: if available, use only as supplementary documentation for libraries or repositories after source-code evidence has been gathered.
+- **GitHub plugin / `gh`**: use for repository metadata, releases, issues, PRs, and publication workflows.
+
+Do not add a recommendation to the build plan unless it is supported by primary evidence, fits this Node.js ESM CLI, and is compatible with the commercial/legal-tech positioning.
 
 ## Build Log
 
@@ -49,7 +63,7 @@ src/utils/logger.js         # chalk-based log helpers: log.info / success / warn
 Renamed the project from `pdf2md-cli` to `LexVaultMD` / `lex-vault-md`.
 
 Updated:
-- npm package name to `lex-vault-md`
+- npm package name to `@nexacrawl/lex-vault-md`
 - CLI command to `lex-vault-md`
 - temporary legacy alias `pdf2md`
 - repository renamed to `Kevork-Nexacrawl-dev/lex-vault-md`

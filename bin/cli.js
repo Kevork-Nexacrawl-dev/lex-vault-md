@@ -1,28 +1,31 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { createRequire } from 'module';
 import { localCommand } from '../src/commands/local.js';
 import { webCommand } from '../src/commands/web.js';
 import { batchCommand } from '../src/commands/batch.js';
 
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json');
 const program = new Command();
 
 program
-  .name('pdf2md')
+  .name('lex-vault-md')
   .description(
 `Convert PDFs to Markdown — supports local files, remote URLs, and batch folders.
 
 Examples:
-  pdf2md local ./report.pdf
-  pdf2md web https://arxiv.org/pdf/2103.00020.pdf
-  pdf2md batch ./case_files/
-  pdf2md batch ./case_files/ --output ./converted/ --concurrency 5
-  pdf2md local ./report.pdf --output notes.md --clipboard
+  lex-vault-md local ./motion.pdf
+  lex-vault-md web https://example.com/brief.pdf
+  lex-vault-md batch ./case_files/
+  lex-vault-md batch ./case_files/ --output ./converted/ --concurrency 5
+  lex-vault-md local ./motion.pdf --output notes.md --clipboard
 
   # Shorthand (auto-detects local path vs URL):
-  pdf2md ./report.pdf
-  pdf2md https://arxiv.org/pdf/2103.00020.pdf`
+  lex-vault-md ./motion.pdf
+  lex-vault-md https://example.com/brief.pdf`
   )
-  .version('1.0.0');
+  .version(packageJson.version);
 
 // ── local <filepath> ────────────────────────────────────────────────────────
 program
@@ -48,7 +51,7 @@ program
   .option('-n, --concurrency <n>',   'Number of PDFs to process in parallel (default: 3)', '3')
   .action(batchCommand);
 
-// ── Shorthand fallback: pdf2md <filepath-or-url> ─────────────────────────────
+// ── Shorthand fallback: lex-vault-md <filepath-or-url> ───────────────────────
 program
   .command('convert <input>', { isDefault: true, hidden: true })
   .description('Auto-detect local file vs URL and convert (shorthand)')

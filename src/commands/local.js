@@ -16,7 +16,7 @@ try {
 }
 
 /**
- * pdf2md local <filepath> [--output <file>] [--clipboard]
+ * lex-vault-md local <filepath> [--output <file>] [--clipboard]
  */
 export async function localCommand(filepath, options) {
   const resolved = path.resolve(filepath);
