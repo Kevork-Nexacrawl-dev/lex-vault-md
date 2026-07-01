@@ -33,24 +33,29 @@ Legal PDFs are structurally rich but extraction-hostile. **LexVaultMD** reads th
 | Offline | Yes — no internet required for local/batch | Varies |
 | Output | Structured `.md` or structured `.json` with schema | Plain text dump |
 | Legal Artifacts | Header/footer removal, watermark stripping, margin noise | Not handled |
+| Scanned PDFs | Optional `--ocr` fallback via Tesseract.js (local) | Varies; often cloud OCR |
 
 ---
 
 ## Data Residency
 
-LexVaultMD is local-first by design. The `local` and `batch` commands process PDFs on the machine where the CLI is running and do not send document content to Nexacrawl, cloud APIs, telemetry endpoints, or third-party processors.
+LexVaultMD processes all document content locally on the user’s machine. No data is transmitted to external services, APIs, or cloud infrastructure at any point during extraction. This applies to both native text extraction and the optional OCR path — Tesseract.js runs entirely in-process. There is no SaaS dependency and no vendor-side storage.
 
-The `web` command only downloads the PDF from the URL you provide, then runs the same local extraction pipeline. Use `local` or `batch` for confidential, privileged, sealed, or client-restricted documents where external network access is not permitted.
+The `local` and `batch` commands process PDFs on the machine where the CLI is running. The `web` command downloads the PDF from the URL you supply, then runs the same local extraction pipeline — the document content is never forwarded to a third party. Use `local` or `batch` for confidential, privileged, sealed, or client-restricted documents where external network access is not permitted.
 
-This makes LexVaultMD suitable for legal teams that need auditable, offline PDF extraction for litigation, discovery, contract review, case files, and AI-ready document workflows.
+This deployment model reduces the surface area implicated by ABA Model Rule 1.6 confidentiality obligations and vendor security review requirements. It is not a substitute for independent legal judgment.
+
+For a signed no-transmission declaration suitable for attachment to a vendor security questionnaire, see [`docs/no-transmission-statement.md`](docs/no-transmission-statement.md). For a pre-answered vendor security packet, see [`docs/vendor-security-packet.md`](docs/vendor-security-packet.md).
 
 ---
 
 ## Commercial Use
 
-LexVaultMD is licensed under the Business Source License 1.1. Non-production use, evaluation, modification, and redistribution are allowed under the terms in [LICENSE](LICENSE). Production or commercial use requires a separate commercial license from Nexacrawl.
+LexVaultMD is source-available with a commercial use restriction. It is free for non-commercial and internal evaluation use under the Business Source License 1.1 (BSL 1.1). A commercial license is required for use in commercial products or services.
 
 Commercial licensing is intended for law firms, legal operations teams, litigation support vendors, e-discovery providers, and organizations that need written vendor assurances for internal procurement.
+
+The Change Date is **2029-01-01** — after that date the code automatically converts to the MIT license.
 
 For commercial licensing, offline deployment, vendor review, or data-handling documentation, contact **nexacrawl@gmail.com**.
 
@@ -171,8 +176,9 @@ Batch mode is **safe to re-run** — already-converted files are skipped automat
 ### Flags
 
 | Command | Flag | Short | Description |
-|---|---|---|---|
+|---|---|---|
 | `local`, `web`, `batch` | `--json` | `-j` | Output structured JSON instead of Markdown (see [JSON Output](#json-output)) |
+| `local`, `web`, `batch` | `--ocr` | `-r` | Enable Tesseract.js OCR fallback for scanned or low-quality pages (see [OCR](#ocr-for-scanned-pdfs)) |
 | `local` | `--output <file>` | `-o` | Custom output filename (default: same name as PDF) |
 | `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
 | `web` | `--output <file>` | `-o` | Custom output filename |
@@ -192,14 +198,17 @@ lex-vault-md web https://example.com/exhibit.pdf --clipboard
 # Batch with higher concurrency for large discovery productions
 lex-vault-md batch ./production/ --output ./review/ --concurrency 8
 
-# Full example with both flags
-lex-vault-md local ./filing.pdf -o ./filings/filing.md -c
-
 # JSON output — single file
 lex-vault-md local ./motion.pdf --json
 
 # JSON output — batch
 lex-vault-md batch ./discovery/ --json --output ./json-vault/
+
+# OCR fallback for scanned deposition exhibits
+lex-vault-md local ./deposition.pdf --ocr
+
+# OCR + JSON (pipe scanned PDF output to a downstream pipeline)
+lex-vault-md local ./exhibit.pdf --ocr --json
 ```
 
 ---
@@ -246,7 +255,38 @@ The schema includes four top-level keys:
 
 See the full schema and field-level descriptions in [docs/cli-reference/json-flag.md](docs/cli-reference/json-flag.md).
 
-> LexVaultMD runs locally. No document content is transmitted to any external service regardless of which output mode you use.
+---
+
+## OCR for Scanned PDFs
+
+Add `--ocr` (or `-r`) to any `local`, `web`, or `batch` command to enable a Tesseract.js OCR fallback layer for pages that native extraction cannot read cleanly.
+
+**`--ocr` requires an additional install step:**
+
+```bash
+# Required
+npm install tesseract.js
+
+# Optional — improves accuracy on skewed or low-contrast scans
+npm install sharp
+```
+
+OCR is not applied blindly to every page. LexVaultMD evaluates each page individually and routes it based on text quality. Born-digital PDFs (motions, filings, contracts) will complete at full native speed even with `--ocr` set — OCR work only happens on pages that genuinely need it. See [docs/cli-reference/ocr-flag.md](docs/cli-reference/ocr-flag.md) for the full routing logic.
+
+```bash
+# Scanned deposition transcript
+lex-vault-md local ./deposition-smith.pdf --ocr
+
+# Batch — mixed folder of born-digital and scanned PDFs
+lex-vault-md batch ./production/ --ocr --output ./review/
+
+# Pipe scanned exhibit output to a downstream pipeline
+lex-vault-md local ./exhibit-a.pdf --ocr --json
+```
+
+> LexVaultMD runs locally. Tesseract.js runs entirely in-process. No page images or extracted text leave your machine during OCR processing.
+
+> **Current limitation:** Full OCR output for wholly scanned pages requires a page image renderer that is on the roadmap. The flag activates the routing layer today and improves output for born-digital PDFs via the NATIVE/REPAIR path. See the [OCR flag reference](docs/cli-reference/ocr-flag.md) for details.
 
 ---
 
@@ -282,7 +322,7 @@ Paragraph text flows here with proper line breaks
 and paragraph spacing preserved from the original PDF.
 ```
 
-**Heading detection** maps font sizes from the PDF's transform matrix relative to the page's most common body-text size:
+**Heading detection** maps font sizes from the PDF’s transform matrix relative to the page’s most common body-text size:
 
 | Font-size ratio | Markdown output |
 |---|---|
@@ -302,6 +342,7 @@ and paragraph spacing preserved from the original PDF.
 - **Artifact removal** — strips repeating headers/footers, watermarks (`DRAFT`, `CONFIDENTIAL`, `COPY`), and margin noise
 - **Garbage gate** — detects and skips scanned/image-only pages automatically
 - **JSON output mode** — `--json` flag outputs structured JSON with metadata, per-page content, heading index, and table index
+- **OCR fallback** — `--ocr` flag enables per-page Tesseract.js OCR routing; only activates on pages that need it
 - **Y-sorted text extraction** — items sorted by visual position (top→bottom, left→right)
 - **Subtle page markers** — invisible HTML comment + `*— page N —*` italic; no large headings
 - **Source metadata** — output header includes filename/URL and extraction timestamp
@@ -321,7 +362,8 @@ and paragraph spacing preserved from the original PDF.
 | File not found | Clear error with resolved path |
 | Not a `.pdf` file | Rejects before attempting extraction |
 | Encrypted / password-protected PDF | Specific error message |
-| Scanned / image-only PDF | Detects via garbage gate, skips with placeholder |
+| Scanned / image-only PDF | Detects via garbage gate, skips with placeholder; use `--ocr` for content |
+| `--ocr` set but `tesseract.js` not installed | Exit with installation hint |
 | Unreachable URL | Distinguishes DNS failure vs. refused connection |
 | HTTP 404 / 403 | Status-specific error messages |
 | Request timeout (30s) | Clean timeout message |
@@ -339,6 +381,8 @@ and paragraph spacing preserved from the original PDF.
 | [`axios`](https://axios-http.com) | ^1.7 | Fetch remote PDFs |
 | [`chalk`](https://github.com/chalk/chalk) | ^5 | Colored terminal output |
 | [`ora`](https://github.com/sindresorhus/ora) | ^8 | Loading spinner |
+| [`tesseract.js`](https://github.com/naptha/tesseract.js) | ^5.1 | OCR engine — optional; required for `--ocr` |
+| [`sharp`](https://sharp.pixelplumbing.com) | ^0.33 | Image preprocessing for OCR — optional |
 
 ---
 
@@ -396,12 +440,10 @@ lex-vault-md batch ./test-folder/
 
 **Business Source License 1.1** — © 2026 Nexacrawl
 
-This project is licensed under the BSL 1.1, which allows non-production use, modification, and redistribution. **Production/commercial use requires a separate license.**
+LexVaultMD is source-available with a commercial use restriction. It is free for non-commercial and internal evaluation use. A commercial license is required for use in commercial products or services. See [LICENSE](LICENSE) for full terms.
 
-- Change Date: **2029-01-01** — after this date, the code automatically converts to **MIT**
+- Change Date: **2029-01-01** — after this date the code automatically converts to **MIT**
 - For commercial licensing inquiries: **nexacrawl@gmail.com**
-
-See the [LICENSE](LICENSE) file for full terms.
 
 ---
 
