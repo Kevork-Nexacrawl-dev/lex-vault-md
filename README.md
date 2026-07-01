@@ -31,7 +31,7 @@ Legal PDFs are structurally rich but extraction-hostile. **LexVaultMD** reads th
 | Headings | Font-size-based detection from transform matrix | Flat text or guesswork |
 | Modes | `local`, `web`, `batch` | Usually single-file only |
 | Offline | Yes — no internet required for local/batch | Varies |
-| Output | Structured `.md` with page markers, metadata header | Plain text dump |
+| Output | Structured `.md` or structured `.json` with schema | Plain text dump |
 | Legal Artifacts | Header/footer removal, watermark stripping, margin noise | Not handled |
 
 ---
@@ -172,6 +172,7 @@ Batch mode is **safe to re-run** — already-converted files are skipped automat
 
 | Command | Flag | Short | Description |
 |---|---|---|---|
+| `local`, `web`, `batch` | `--json` | `-j` | Output structured JSON instead of Markdown (see [JSON Output](#json-output)) |
 | `local` | `--output <file>` | `-o` | Custom output filename (default: same name as PDF) |
 | `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
 | `web` | `--output <file>` | `-o` | Custom output filename |
@@ -193,7 +194,59 @@ lex-vault-md batch ./production/ --output ./review/ --concurrency 8
 
 # Full example with both flags
 lex-vault-md local ./filing.pdf -o ./filings/filing.md -c
+
+# JSON output — single file
+lex-vault-md local ./motion.pdf --json
+
+# JSON output — batch
+lex-vault-md batch ./discovery/ --json --output ./json-vault/
 ```
+
+---
+
+## JSON Output
+
+Add `--json` (or `-j`) to any `local`, `web`, or `batch` command to receive structured JSON instead of Markdown. This is the right mode for pipelines, integrations, and downstream automation.
+
+```bash
+lex-vault-md local ./motion-to-dismiss.pdf --json
+```
+
+Output file (`motion-to-dismiss.json`):
+
+```json
+{
+  "metadata": {
+    "source": "motion-to-dismiss.pdf",
+    "extracted": "2026-06-30T19:37:00.000Z",
+    "pages": 3,
+    "chars": 5891
+  },
+  "pages": [
+    { "page": 1, "content": "# MOTION TO DISMISS\n\n## IN THE UNITED STATES DISTRICT COURT\n..." },
+    { "page": 2, "content": "## I. STATEMENT OF FACTS\n\nOn or about January 1, 2026..." },
+    { "page": 3, "content": "## II. ARGUMENT\n\n### A. Standard of Review\n..." }
+  ],
+  "headings": [
+    { "level": 1, "text": "MOTION TO DISMISS", "page": 1 },
+    { "level": 2, "text": "I. STATEMENT OF FACTS", "page": 2 },
+    { "level": 2, "text": "II. ARGUMENT", "page": 3 },
+    { "level": 3, "text": "A. Standard of Review", "page": 3 }
+  ],
+  "tables": []
+}
+```
+
+The schema includes four top-level keys:
+
+- **`metadata`** — source path/URL, extraction timestamp, page count, character count
+- **`pages`** — array of page objects, each with a 1-based `page` index and full Markdown `content` for that page
+- **`headings`** — extracted heading index with `level`, `text`, and `page`; useful for building document outlines or search indexes
+- **`tables`** — array of detected tables with row/column counts and Markdown representation; empty array `[]` when no tables are present
+
+See the full schema and field-level descriptions in [docs/cli-reference/json-flag.md](docs/cli-reference/json-flag.md).
+
+> LexVaultMD runs locally. No document content is transmitted to any external service regardless of which output mode you use.
 
 ---
 
@@ -248,6 +301,7 @@ and paragraph spacing preserved from the original PDF.
 - **Table extraction** — hybrid lattice/stream orchestrator for bordered and borderless tables
 - **Artifact removal** — strips repeating headers/footers, watermarks (`DRAFT`, `CONFIDENTIAL`, `COPY`), and margin noise
 - **Garbage gate** — detects and skips scanned/image-only pages automatically
+- **JSON output mode** — `--json` flag outputs structured JSON with metadata, per-page content, heading index, and table index
 - **Y-sorted text extraction** — items sorted by visual position (top→bottom, left→right)
 - **Subtle page markers** — invisible HTML comment + `*— page N —*` italic; no large headings
 - **Source metadata** — output header includes filename/URL and extraction timestamp
