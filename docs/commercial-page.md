@@ -35,11 +35,11 @@ lex-vault-md local brief.pdf
 
 Everything in Community, plus:
 
-- **Signed Windows binary** — Authenticode-signed `.exe`; no unsigned-executable warnings from Windows Defender or endpoint security
+- **Verified artifact checksums** — SHA-256 and SHA-512 for all distributed artifacts
+- **Signed Windows binary** *(coming before GA — Authenticode-signed .exe for zero-warning deployment via Windows Defender and endpoint security)*
 - **MSI installer + silent install support** — deploy via Group Policy, SCCM, or Intune; `msiexec /quiet /i LexVaultMD.msi`
 - **WinGet manifest** — enterprise winget catalog entry for managed software inventories
 - **Software Bill of Materials (SBOM)** — CycloneDX JSON listing every dependency, version, and license
-- **Checksums file** — SHA-256 and SHA-512 for all distributed artifacts
 - **Offline architecture diagram** — one-page visual showing data flow (local disk → CPU → output file; no network hops)
 - **"No Data Transmission" statement** — signed PDF declaration suitable for attaching to vendor questionnaire responses
 - **Pre-answered vendor questionnaire template** — covers data storage, encryption, network access, sub-processors, incident response; ready for your security team to review and submit

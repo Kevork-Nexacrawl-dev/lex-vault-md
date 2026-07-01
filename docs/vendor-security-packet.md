@@ -2,7 +2,7 @@
 
 **Product:** LexVaultMD (`@nexacrawl/lex-vault-md`)  
 **Developer:** Nexacrawl  
-**Document version:** 1.0  
+**Document version:** 1.1  
 **For use with:** Professional and Team tier licenses  
 
 > **Instructions for the licensee:** This document provides pre-drafted answers to common vendor security questionnaire questions. Review each answer, fill in any bracketed placeholders (e.g., `[YOUR ORGANIZATION NAME]`), and submit to your security or procurement team. Contact [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev) if your questionnaire requires a response not covered here.
@@ -21,7 +21,7 @@
 > LexVaultMD is a command-line tool that converts PDF documents to structured Markdown or JSON, running entirely on the end user's local hardware. It is designed for use in confidentiality-sensitive legal workflows.
 
 **1.4 Is this a SaaS product, on-premises software, or both?**
-> On-premises software only. LexVaultMD is distributed as an npm package and (for Professional/Team tier) as a signed Windows binary and MSI installer. There is no SaaS component, hosted API, or cloud-processing option.
+> On-premises software only. LexVaultMD is distributed as an npm package and (for Professional/Team tier) as a precompiled Windows binary and MSI installer (Authenticode signing in progress). There is no SaaS component, hosted API, or cloud-processing option.
 
 ---
 
@@ -88,7 +88,7 @@
 > Yes. A CycloneDX JSON SBOM listing all runtime dependencies, versions, and licenses is included with Professional and Team tier licenses.
 
 **5.2 Are distributed binaries signed?**
-> Yes (Professional and Team tiers). Windows binaries (`.exe` and MSI) are Authenticode-signed. SHA-256 and SHA-512 checksums for all distributed artifacts are provided. Community tier (npm package) is distributed via the npm registry with package integrity enforced by npm's lockfile mechanism.
+> Checksums (SHA-256 and SHA-512) are provided for all distributed artifacts. Authenticode-signed Windows binaries are on the roadmap and will be available before Professional tier general availability. Community tier (npm) is distributed via the npm registry with package integrity enforced by npm's lockfile mechanism.
 
 **5.3 What is the software development lifecycle (SDLC) and security review process?**
 > LexVaultMD is developed by Nexacrawl with continuous dependency auditing (`npm audit`) applied at each release. Source code is available for review under BSL 1.1. Security findings may be reported to [sales@nexacrawl.dev](mailto:sales@nexacrawl.dev).
