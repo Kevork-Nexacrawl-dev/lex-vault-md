@@ -34,6 +34,7 @@ Legal PDFs are structurally rich but extraction-hostile. **LexVaultMD** reads th
 | Output | Structured `.md` or structured `.json` with schema | Plain text dump |
 | Legal Artifacts | Header/footer removal, watermark stripping, margin noise | Not handled |
 | Scanned PDFs | Optional `--ocr` fallback via Tesseract.js (local) | Varies; often cloud OCR |
+| Document Profiles | `--template contract/deposition/filing` | Not available |
 
 ---
 
@@ -176,9 +177,10 @@ Batch mode is **safe to re-run** — already-converted files are skipped automat
 ### Flags
 
 | Command | Flag | Short | Description |
-|---|---|---|
+|---|---|---|---|
 | `local`, `web`, `batch` | `--json` | `-j` | Output structured JSON instead of Markdown (see [JSON Output](#json-output)) |
 | `local`, `web`, `batch` | `--ocr` | `-r` | Enable Tesseract.js OCR fallback for scanned or low-quality pages (see [OCR](#ocr-for-scanned-pdfs)) |
+| `local`, `web`, `batch` | `--template <profile>` | `-t` | Apply a legal document profile: `contract`, `deposition`, or `filing` (see [Document Profiles](#document-profiles)) |
 | `local` | `--output <file>` | `-o` | Custom output filename (default: same name as PDF) |
 | `local` | `--clipboard` | `-c` | Copy Markdown to clipboard after saving |
 | `web` | `--output <file>` | `-o` | Custom output filename |
@@ -209,6 +211,43 @@ lex-vault-md local ./deposition.pdf --ocr
 
 # OCR + JSON (pipe scanned PDF output to a downstream pipeline)
 lex-vault-md local ./exhibit.pdf --ocr --json
+
+# Contract profile — defined-term annotations + signature block fencing
+lex-vault-md local ./nda.pdf --template contract
+
+# Deposition profile — Q&A blockquotes + page/line preservation
+lex-vault-md local ./deposition-smith.pdf --template deposition
+
+# Filing profile — caption fencing + numbered paragraphs
+lex-vault-md batch ./case-files/ --template filing --output ./converted/
+
+# Combine all three: OCR + filing profile + JSON output
+lex-vault-md local ./motion.pdf --ocr --template filing --json
+```
+
+---
+
+## Document Profiles
+
+Different legal document types follow different structural conventions, and a generic PDF extractor cannot know whether a block of text is a defined term in a contract, a Q&A turn in a deposition, or a numbered allegation in a complaint. The `--template` flag tells LexVaultMD which document type it is processing so it can apply the appropriate structural transformations — annotating defined terms, preserving transcript line numbers, fencing pleading captions — rather than outputting everything as undifferentiated prose.
+
+All three profiles run in-process after extraction, so they add no latency for the extraction step itself and transmit no data externally. See [docs/cli-reference/template-flag.md](docs/cli-reference/template-flag.md) for the full profile reference with example output snippets.
+
+| Profile | Use for | Key transformations |
+|---|---|---|
+| `contract` | NDAs, agreements, leases, engagement letters | Defined-term backtick annotation, signature block fencing, orphan stripping, cross-page clause joins |
+| `deposition` | Deposition transcripts, court-reporter files | Q&A blockquote formatting, exhibit marker annotation, page/line number preservation (no cross-page joins) |
+| `filing` | Motions, briefs, pleadings, complaints | Caption/pleading-frame fencing, numbered paragraph list normalisation, exhibit index fencing, cross-page joins |
+
+```bash
+# Contract: NDA with defined-term and signature block annotations
+lex-vault-md local ./nda.pdf --template contract
+
+# Deposition: transcript with Q&A formatting and exhibit citations
+lex-vault-md local ./deposition-smith.pdf --template deposition
+
+# Filing: motion with caption fencing and numbered paragraphs
+lex-vault-md local ./motion-to-dismiss.pdf --template filing
 ```
 
 ---
@@ -248,7 +287,7 @@ Output file (`motion-to-dismiss.json`):
 
 The schema includes four top-level keys:
 
-- **`metadata`** — source path/URL, extraction timestamp, page count, character count
+- **`metadata`** — source path/URL, extraction timestamp, page count, character count; also includes `profile` when `--template` is set
 - **`pages`** — array of page objects, each with a 1-based `page` index and full Markdown `content` for that page
 - **`headings`** — extracted heading index with `level`, `text`, and `page`; useful for building document outlines or search indexes
 - **`tables`** — array of detected tables with row/column counts and Markdown representation; empty array `[]` when no tables are present
@@ -343,6 +382,7 @@ and paragraph spacing preserved from the original PDF.
 - **Garbage gate** — detects and skips scanned/image-only pages automatically
 - **JSON output mode** — `--json` flag outputs structured JSON with metadata, per-page content, heading index, and table index
 - **OCR fallback** — `--ocr` flag enables per-page Tesseract.js OCR routing; only activates on pages that need it
+- **Document profiles** — `--template contract/deposition/filing` applies legal-document-type-specific structural transformations after extraction
 - **Y-sorted text extraction** — items sorted by visual position (top→bottom, left→right)
 - **Subtle page markers** — invisible HTML comment + `*— page N —*` italic; no large headings
 - **Source metadata** — output header includes filename/URL and extraction timestamp
@@ -364,6 +404,7 @@ and paragraph spacing preserved from the original PDF.
 | Encrypted / password-protected PDF | Specific error message |
 | Scanned / image-only PDF | Detects via garbage gate, skips with placeholder; use `--ocr` for content |
 | `--ocr` set but `tesseract.js` not installed | Exit with installation hint |
+| Unknown `--template` profile name | Hard error before extraction: lists valid values |
 | Unreachable URL | Distinguishes DNS failure vs. refused connection |
 | HTTP 404 / 403 | Status-specific error messages |
 | Request timeout (30s) | Clean timeout message |
