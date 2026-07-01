@@ -7,6 +7,8 @@ import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 // [CORE-BSL] JSON output support
 import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
+// [PRO-CANDIDATE] OCR fallback
+import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
 import { log } from '../utils/logger.js';
 
 let clipboardy;
@@ -19,7 +21,7 @@ try {
 }
 
 /**
- * lex-vault-md web <url> [--output <file>] [--clipboard] [--json]
+ * lex-vault-md web <url> [--output <file>] [--clipboard] [--json] [--ocr]
  */
 export async function webCommand(url, options) {
   // Basic URL validation
@@ -34,6 +36,17 @@ export async function webCommand(url, options) {
   if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
     log.error('Only http:// and https:// URLs are supported.');
     process.exit(1);
+  }
+
+  // [PRO-CANDIDATE] Initialise OCR worker pool once before fetch
+  if (options.ocr) {
+    try {
+      await initOCRPool();
+    } catch (err) {
+      log.error(`Could not start Tesseract.js worker pool: ${err.message}`);
+      log.error('Run: npm install tesseract.js');
+      process.exit(1);
+    }
   }
 
   const spinner = ora(`Fetching PDF from ${parsedUrl.hostname}...`).start();
@@ -57,7 +70,13 @@ export async function webCommand(url, options) {
     spinner.text = 'Extracting text and detecting headings...';
     const buffer = Buffer.from(response.data);
 
-    const pages = await extractPDF(buffer, url);
+    let pages = await extractPDF(buffer, url);
+
+    // [PRO-CANDIDATE] --ocr branch: apply per-page OCR routing after extraction
+    if (options.ocr) {
+      spinner.text = 'Applying OCR fallback where needed...';
+      pages = await applyOCRFallback(pages, [], options);
+    }
 
     // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
     if (options.json) {
@@ -108,5 +127,8 @@ export async function webCommand(url, options) {
       log.error(err.message);
     }
     process.exit(1);
+  } finally {
+    // [PRO-CANDIDATE] Always terminate OCR workers on exit
+    if (options.ocr) await terminateOCRPool();
   }
 }

@@ -23,6 +23,8 @@ Examples:
   lex-vault-md local ./motion.pdf --json
   lex-vault-md web https://example.com/brief.pdf --json
   lex-vault-md batch ./case_files/ --json
+  lex-vault-md local ./deposition.pdf --ocr
+  lex-vault-md batch ./case_files/ --ocr
 
   # Shorthand (auto-detects local path vs URL):
   lex-vault-md ./motion.pdf
@@ -38,6 +40,8 @@ program
   .option('-c, --clipboard',     'Copy result to clipboard after saving')
   // [CORE-BSL]
   .option('-j, --json',          'Output structured JSON instead of Markdown')
+  // [PRO-CANDIDATE]
+  .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
   .action(localCommand);
 
 // ── web <url> ────────────────────────────────────────────────────────────────
@@ -48,6 +52,8 @@ program
   .option('-c, --clipboard',     'Copy result to clipboard after saving')
   // [CORE-BSL]
   .option('-j, --json',          'Output structured JSON instead of Markdown')
+  // [PRO-CANDIDATE]
+  .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
   .action(webCommand);
 
 // ── batch <folder> ───────────────────────────────────────────────────────────
@@ -58,6 +64,8 @@ program
   .option('-n, --concurrency <n>',   'Number of PDFs to process in parallel (default: 3)', '3')
   // [CORE-BSL]
   .option('-j, --json',              'Output structured JSON instead of Markdown (writes .json files)')
+  // [PRO-CANDIDATE]
+  .option('-r, --ocr',               'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
   .action(batchCommand);
 
 // ── Shorthand fallback: lex-vault-md <filepath-or-url> ───────────────────────
@@ -68,6 +76,8 @@ program
   .option('-c, --clipboard',     'Copy result to clipboard after saving')
   // [CORE-BSL]
   .option('-j, --json',          'Output structured JSON instead of Markdown')
+  // [PRO-CANDIDATE]
+  .option('-r, --ocr',           'Enable Tesseract.js OCR fallback for low-quality or scanned pages')
   .action((input, options) => {
     const isUrl = /^https?:\/\//i.test(input);
     if (isUrl) {

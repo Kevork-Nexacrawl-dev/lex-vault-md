@@ -5,10 +5,12 @@ import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 // [CORE-BSL] JSON output support
 import { formatJSON } from '../utils/json-formatter.js';
+// [PRO-CANDIDATE] OCR fallback
+import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
 import { log } from '../utils/logger.js';
 
 /**
- * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>] [--json]
+ * lex-vault-md batch <folder> [--output <dir>] [--concurrency <n>] [--json] [--ocr]
  *
  * Converts every PDF in <folder> to Markdown (default) or JSON (--json).
  * Output defaults to the same folder as the source PDFs.
@@ -48,18 +50,35 @@ export async function batchCommand(folder, options) {
 
   // [CORE-BSL] surface output mode in progress log
   const outputMode = options.json ? 'JSON' : 'Markdown';
-  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)} → outputting ${outputMode}`);
+  const ocrNote   = options.ocr  ? ' + OCR fallback' : '';
+  log.info(`Found ${pdfs.length} PDF(s) in ${path.basename(resolvedFolder)} → outputting ${outputMode}${ocrNote}`);
   log.dim(`Output → ${outDir}`);
   console.log();
+
+  // [PRO-CANDIDATE] Initialise OCR worker pool ONCE for the whole batch
+  if (options.ocr) {
+    try {
+      await initOCRPool();
+    } catch (err) {
+      log.error(`Could not start Tesseract.js worker pool: ${err.message}`);
+      log.error('Run: npm install tesseract.js');
+      process.exit(1);
+    }
+  }
 
   const concurrency = Math.max(1, parseInt(options.concurrency, 10) || 3);
   const results = { converted: 0, skipped: 0, failed: 0 };
   const errors = [];
 
   // Process in chunks of <concurrency>
-  for (let i = 0; i < pdfs.length; i += concurrency) {
-    const chunk = pdfs.slice(i, i + concurrency);
-    await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors, options)));
+  try {
+    for (let i = 0; i < pdfs.length; i += concurrency) {
+      const chunk = pdfs.slice(i, i + concurrency);
+      await Promise.all(chunk.map(filename => processOne(filename, resolvedFolder, outDir, results, errors, options)));
+    }
+  } finally {
+    // [PRO-CANDIDATE] Always terminate OCR workers after batch
+    if (options.ocr) await terminateOCRPool();
   }
 
   // Summary
@@ -77,7 +96,7 @@ export async function batchCommand(folder, options) {
   }
 }
 
-// [CORE-BSL] options passed through to support --json per-file routing
+// [CORE-BSL] options passed through to support --json and --ocr per-file routing
 async function processOne(filename, sourceDir, outDir, results, errors, options) {
   const inputPath = path.join(sourceDir, filename);
 
@@ -98,7 +117,12 @@ async function processOne(filename, sourceDir, outDir, results, errors, options)
 
   try {
     const buffer = fs.readFileSync(inputPath);
-    const pages  = await extractPDF(buffer, filename);
+    let pages    = await extractPDF(buffer, filename);
+
+    // [PRO-CANDIDATE] --ocr branch: apply per-page OCR routing after extraction
+    if (options.ocr) {
+      pages = await applyOCRFallback(pages, [], options);
+    }
 
     // [CORE-BSL] --json branch
     if (options.json) {

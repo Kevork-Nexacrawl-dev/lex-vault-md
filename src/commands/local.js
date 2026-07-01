@@ -6,6 +6,8 @@ import { extractPDF } from '../services/extractor.js';
 import { formatMarkdown, deriveOutputFilename } from '../utils/formatter.js';
 // [CORE-BSL] JSON output support
 import { formatJSON, deriveJsonFilename } from '../utils/json-formatter.js';
+// [PRO-CANDIDATE] OCR fallback
+import { applyOCRFallback, initOCRPool, terminateOCRPool } from '../services/ocr-router.js';
 import { log } from '../utils/logger.js';
 
 // clipboard support (optional — graceful fallback if not installed)
@@ -18,7 +20,7 @@ try {
 }
 
 /**
- * lex-vault-md local <filepath> [--output <file>] [--clipboard] [--json]
+ * lex-vault-md local <filepath> [--output <file>] [--clipboard] [--json] [--ocr]
  */
 export async function localCommand(filepath, options) {
   const resolved = path.resolve(filepath);
@@ -37,11 +39,31 @@ export async function localCommand(filepath, options) {
 
   const spinner = ora(`Reading ${path.basename(resolved)}...`).start();
 
+  // [PRO-CANDIDATE] Initialise OCR worker pool once before extraction
+  if (options.ocr) {
+    try {
+      await initOCRPool();
+    } catch (err) {
+      spinner.fail('OCR initialisation failed');
+      log.error(`Could not start Tesseract.js worker pool: ${err.message}`);
+      log.error('Run: npm install tesseract.js');
+      process.exit(1);
+    }
+  }
+
   try {
     const buffer = fs.readFileSync(resolved);
     spinner.text = 'Extracting text and detecting headings...';
 
-    const pages = await extractPDF(buffer, path.basename(resolved));
+    let pages = await extractPDF(buffer, path.basename(resolved));
+
+    // [PRO-CANDIDATE] --ocr branch: apply per-page OCR routing after extraction
+    if (options.ocr) {
+      spinner.text = 'Applying OCR fallback where needed...';
+      // rawPageMeta is empty here — no page images available in CLI local mode.
+      // applyOCRFallback gracefully handles missing imageBuffer per page.
+      pages = await applyOCRFallback(pages, [], options);
+    }
 
     // [CORE-BSL] --json branch: write structured JSON, skip Markdown path entirely
     if (options.json) {
@@ -88,5 +110,8 @@ export async function localCommand(filepath, options) {
       log.error(err.message);
     }
     process.exit(1);
+  } finally {
+    // [PRO-CANDIDATE] Always terminate OCR workers on exit
+    if (options.ocr) await terminateOCRPool();
   }
 }
