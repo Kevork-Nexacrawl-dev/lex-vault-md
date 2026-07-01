@@ -1,0 +1,39 @@
+{
+  "_schemaVersion": "1.0",
+  "slug": "deposition-sample",
+  "documentType": "deposition",
+  "description": "Deposition transcript with Q&A structure, page/line numbers in left margin, and exhibit markers. Known weakness document — left-margin line numbers are known to confuse all extractors.",
+  "source": "Obtain from any court reporter sample or public deposition via PACER. Alternatively use any publicly-available legal transcription training sample.",
+  "license": "Verify per source",
+  "knownWeakness": true,
+  "knownWeaknessNote": "Left-margin page/line numbers (the '1 2 3 4 5' column) are a known failure mode for all extractors including LexVaultMD. Included specifically to measure this failure mode — do not exclude even when LexVaultMD loses.",
+  "metadata": {
+    "pageCount": 20,
+    "nativeRatio": 1.0,
+    "note": "Update pageCount to match your obtained PDF before running benchmark."
+  },
+  "headings": [
+    { "level": 1, "text": "DEPOSITION OF [WITNESS NAME]", "page": 1 },
+    { "level": 2, "text": "EXAMINATION BY [ATTORNEY NAME]", "page": 2 }
+  ],
+  "tables": [],
+  "readingOrderChecks": [
+    {
+      "description": "Q: lines present (question markers)",
+      "regex": "^Q[.:]?",
+      "expectedCount": 60,
+      "tolerance": 15
+    }
+  ],
+  "legalArtifacts": {
+    "batesNumbers": false,
+    "confidentialityStamp": false,
+    "pageLineNumbers": true,
+    "exhibitMarkers": true,
+    "manualEvalNote": "Verify: (1) page/line numbers from left margin do NOT appear inline with Q&A text, (2) Exhibit markers (Exhibit 1, Exhibit A) are preserved."
+  },
+  "clauseContinuity": {
+    "crossPageClauses": 0,
+    "manualEvalNote": "N/A for deposition — Q&A should NOT be joined across pages. Score 5 if Q/A pairs are never split mid-sentence."
+  }
+}

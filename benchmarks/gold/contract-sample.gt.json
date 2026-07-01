@@ -1,0 +1,52 @@
+{
+  "_schemaVersion": "1.0",
+  "slug": "contract-sample",
+  "documentType": "contract",
+  "description": "Multi-party merger agreement with defined terms, signature blocks, and exhibits. Representative of SEC EDGAR Form 8-K Exhibit 2.1 filings.",
+  "source": "SEC EDGAR — obtain any publicly-filed merger agreement (Form 8-K, Exhibit 2.1). Search: https://efts.sec.gov/LATEST/search-index?q=%22merger+agreement%22&forms=8-K&dateRange=custom&startdt=2024-01-01&enddt=2025-01-01",
+  "license": "Public domain (U.S. government filing)",
+  "knownWeakness": false,
+  "metadata": {
+    "pageCount": 12,
+    "nativeRatio": 1.0,
+    "note": "Update pageCount to match your obtained PDF before running benchmark."
+  },
+  "headings": [
+    { "level": 1, "text": "AGREEMENT AND PLAN OF MERGER", "page": 1 },
+    { "level": 2, "text": "ARTICLE I — DEFINITIONS", "page": 2 },
+    { "level": 2, "text": "ARTICLE II — THE MERGER", "page": 3 },
+    { "level": 2, "text": "ARTICLE III — REPRESENTATIONS AND WARRANTIES", "page": 5 },
+    { "level": 2, "text": "ARTICLE IV — COVENANTS", "page": 8 },
+    { "level": 2, "text": "ARTICLE V — CONDITIONS", "page": 10 },
+    { "level": 2, "text": "ARTICLE VI — GENERAL PROVISIONS", "page": 11 }
+  ],
+  "tables": [
+    {
+      "description": "Consideration schedule",
+      "page": 4,
+      "columns": 3,
+      "rows": 5,
+      "hasMergedCells": false,
+      "crossPage": false
+    }
+  ],
+  "readingOrderChecks": [
+    {
+      "description": "Numbered article headings appear in document",
+      "regex": "ARTICLE [IVX]+",
+      "expectedCount": 6,
+      "tolerance": 1
+    }
+  ],
+  "legalArtifacts": {
+    "batesNumbers": false,
+    "confidentialityStamp": true,
+    "signatureBlock": true,
+    "exhibitReferences": true,
+    "manualEvalNote": "Verify: (1) confidentiality stamp preserved as text or clearly suppressed, (2) signature block appears at end with party names, (3) Exhibit A/B references intact inline."
+  },
+  "clauseContinuity": {
+    "crossPageClauses": 3,
+    "manualEvalNote": "Count defined-term clauses that start on one page and end on next. Score 5 = all 3 joined, score 3 = 1–2 broken."
+  }
+}

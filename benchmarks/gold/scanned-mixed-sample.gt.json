@@ -1,0 +1,29 @@
+{
+  "_schemaVersion": "1.0",
+  "slug": "scanned-mixed-sample",
+  "documentType": "scanned-mixed",
+  "description": "PDF with page 1 as a scanned image and pages 2+ as born-digital. Tests OCR routing and hybrid extraction accuracy.",
+  "source": "Construct by combining a scanned page (photograph of a legal doc at 200 DPI) with born-digital pages: use img2pdf, Adobe Acrobat, or any PDF merge tool. Alternatively use any redacted PDF where redactions are image-based.",
+  "license": "Constructed test artifact",
+  "knownWeakness": true,
+  "knownWeaknessNote": "Scanned page 1 will produce degraded output on all tools without OCR enabled. Included to measure baseline degradation and to validate --ocr routing behavior.",
+  "metadata": {
+    "pageCount": 5,
+    "nativeRatio": 0.6,
+    "note": "Page 1 scanned (native ratio ~0.1). Pages 2–5 born-digital. Update pageCount to match your constructed PDF."
+  },
+  "headings": [
+    { "level": 1, "text": "[DOCUMENT TITLE — update per your test PDF]", "page": 1 }
+  ],
+  "tables": [],
+  "readingOrderChecks": [],
+  "legalArtifacts": {
+    "batesNumbers": false,
+    "confidentialityStamp": false,
+    "manualEvalNote": "Verify scanned page 1 produces readable text or a clearly-labeled fallback comment — not garbage characters."
+  },
+  "clauseContinuity": {
+    "crossPageClauses": 1,
+    "manualEvalNote": "Verify the clause bridging pages 1–2 (scanned to native) is handled gracefully."
+  }
+}

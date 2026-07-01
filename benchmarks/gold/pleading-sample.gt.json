@@ -1,0 +1,43 @@
+{
+  "_schemaVersion": "1.0",
+  "slug": "pleading-sample",
+  "documentType": "pleading",
+  "description": "Federal civil complaint with caption, numbered paragraphs, and exhibit references.",
+  "source": "PACER Public Access — https://pcl.uscourts.gov/pcl/pages/welcome.jsf — download any civil complaint (docket item 1). Many courts post complaints free on their websites.",
+  "license": "Public domain (U.S. federal court filing)",
+  "knownWeakness": false,
+  "metadata": {
+    "pageCount": 18,
+    "nativeRatio": 1.0,
+    "note": "Update pageCount to match your obtained PDF before running benchmark."
+  },
+  "headings": [
+    { "level": 1, "text": "UNITED STATES DISTRICT COURT", "page": 1 },
+    { "level": 2, "text": "NATURE OF THE ACTION", "page": 2 },
+    { "level": 2, "text": "PARTIES", "page": 3 },
+    { "level": 2, "text": "JURISDICTION AND VENUE", "page": 4 },
+    { "level": 2, "text": "FACTUAL ALLEGATIONS", "page": 5 },
+    { "level": 2, "text": "CLAIMS FOR RELIEF", "page": 10 },
+    { "level": 2, "text": "PRAYER FOR RELIEF", "page": 17 }
+  ],
+  "tables": [],
+  "readingOrderChecks": [
+    {
+      "description": "Numbered paragraphs present (\\d+. pattern)",
+      "regex": "^\\d+\\.",
+      "expectedCount": 80,
+      "tolerance": 10
+    }
+  ],
+  "legalArtifacts": {
+    "batesNumbers": false,
+    "confidentialityStamp": false,
+    "signatureBlock": true,
+    "exhibitReferences": true,
+    "manualEvalNote": "Verify: (1) Exhibit A/B/C references preserved inline, (2) attorney signature block (bar number, firm name) at end."
+  },
+  "clauseContinuity": {
+    "crossPageClauses": 5,
+    "manualEvalNote": "Numbered paragraphs spanning a page boundary should not be split. Score 5 = all joined, score 3 = 2–3 split."
+  }
+}

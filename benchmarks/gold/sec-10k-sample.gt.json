@@ -1,0 +1,61 @@
+{
+  "_schemaVersion": "1.0",
+  "slug": "sec-10k-sample",
+  "documentType": "sec-filing",
+  "description": "SEC Form 10-K annual report with Item sections, MD&A, financial tables, and signature page.",
+  "source": "SEC EDGAR full-text search: https://efts.sec.gov/LATEST/search-index?q=&forms=10-K&dateRange=custom&startdt=2024-01-01&enddt=2025-01-01 — download any 10-K filing PDF.",
+  "license": "Public domain (U.S. government filing)",
+  "knownWeakness": false,
+  "metadata": {
+    "pageCount": 40,
+    "nativeRatio": 1.0,
+    "note": "Update pageCount to match your obtained PDF before running benchmark."
+  },
+  "headings": [
+    { "level": 1, "text": "FORM 10-K", "page": 1 },
+    { "level": 2, "text": "PART I", "page": 3 },
+    { "level": 3, "text": "Item 1. Business", "page": 3 },
+    { "level": 3, "text": "Item 1A. Risk Factors", "page": 7 },
+    { "level": 2, "text": "PART II", "page": 15 },
+    { "level": 3, "text": "Item 7. Management's Discussion and Analysis", "page": 18 },
+    { "level": 3, "text": "Item 8. Financial Statements", "page": 25 },
+    { "level": 2, "text": "SIGNATURES", "page": 39 }
+  ],
+  "tables": [
+    {
+      "description": "Selected Financial Data",
+      "page": 16,
+      "columns": 5,
+      "rows": 8,
+      "hasMergedCells": true,
+      "crossPage": false
+    },
+    {
+      "description": "Consolidated Income Statement",
+      "page": 26,
+      "columns": 4,
+      "rows": 20,
+      "hasMergedCells": false,
+      "crossPage": true
+    }
+  ],
+  "readingOrderChecks": [
+    {
+      "description": "Item section headers present",
+      "regex": "Item \\d+[A-Z]?\\.",
+      "expectedCount": 15,
+      "tolerance": 3
+    }
+  ],
+  "legalArtifacts": {
+    "batesNumbers": false,
+    "confidentialityStamp": false,
+    "signatureBlock": true,
+    "exhibitIndex": true,
+    "manualEvalNote": "Verify: (1) Exhibit Index table detected, (2) SIGNATURES section with officer names and dates intact."
+  },
+  "clauseContinuity": {
+    "crossPageClauses": 4,
+    "manualEvalNote": "Item 7 MD&A paragraphs often span pages. Score 5 = all joined cleanly, score 3 = 2 broken."
+  }
+}
