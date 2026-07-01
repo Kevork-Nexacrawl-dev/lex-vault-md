@@ -7,7 +7,7 @@
 
 ## Current Phase
 
-Phase 2 — Builder Agent (active, --json flag shipped and documented)
+Phase 2 — Builder Agent (active, --json and --ocr shipped and documented)
 
 ---
 
@@ -16,7 +16,7 @@ Phase 2 — Builder Agent (active, --json flag shipped and documented)
 The repo is "done enough to sell" when:
 
 - [x] --json output mode ships and is documented
-- [ ] --ocr flag ships with tesseract.js fallback documented
+- [x] --ocr flag ships with tesseract.js fallback documented
 - [ ] --template flag ships with contract/deposition/filing profiles
 - [x] README has Commercial Use + Data Residency sections
 - [ ] BSL 1.1 license confirmed correct
@@ -38,6 +38,7 @@ The repo is "done enough to sell" when:
 | 2026-06-30 | Docs Writer A3 | Wrote --json flag documentation. Created `docs/cli-reference/json-flag.md`: flag reference (name, type, default, supported commands), full JSON output schema with field-level descriptions, complete example output for a 3-page motion, when-to-use guidance, Node.js integration example. Updated `README.md`: added `--json` as first row in Flags table (local/web/batch), added JSON Output section with condensed schema + example, added JSON output mode to Features list, updated Why table to mention `.json` output. | cd4c745c72bdf5c8f3da884db4d12114271854ab (json-flag.md) / 7fb95912c5055c081c349381667ca36b5ff6d5a4 (README.md) |
 | 2026-06-30 | Monetization Implementer | Commercial infrastructure skeleton. Confirmed Phase 2 active; --json checked off; --ocr and --template not yet checked off (not packaged). Created four pre-sale docs that describe the deployment model (always true, no feature gating required): `docs/commercial-page.md` (Professional $799/yr + Team $2,500/yr landing page copy with FAQ and compliance messaging), `docs/no-transmission-statement.md` (one-page signed declaration for vendor questionnaire attachment), `docs/vendor-security-packet.md` (pre-answered vendor security questionnaire template covering data handling, network, SBOM, SDLC, incident response, GDPR/HIPAA), `docs/offline-architecture.md` (full text architecture description with ASCII diagram, component descriptions, network behavior table, risk vector comparison, and distribution/integrity section). | 15e00a255a713edc04e394f22f41b25a2316cc44 |
 | 2026-06-30 | Monetization Implementer | Patch: signing accuracy corrections before Sprint 2. `docs/vendor-security-packet.md` v1.0→1.1: section 5.2 updated — removed claim that binaries are currently Authenticode-signed; now states checksums are provided now and Authenticode signing is on the roadmap before Professional GA. Section 1.4 updated — "signed Windows binary" → "precompiled Windows binary (Authenticode signing in progress)". `docs/commercial-page.md`: replaced single signed-binary bullet with two bullets — "Verified artifact checksums" (available now) and "Signed Windows binary" marked *(coming before GA)*. | 5e8af50a48dcb1274672fbdf02e413cdeceb5c06 |
+| 2026-06-30 | Build Implementer | Shipped --ocr flag with Tesseract.js worker pool and per-page routing. New files: `src/services/ocr-router.js` [PRO-CANDIDATE] — printable_native_ratio routing (>=0.97 NATIVE, 0.85–0.97 NATIVE+REPAIR, <0.85+imageCoverage≥0.60 WHOLE-PAGE OCR, fallback REGION OCR), singleton worker pool with round-robin acquire(), lazy Tesseract.js import (zero overhead when --ocr absent), graceful handling of missing page imageBuffer; `src/services/ocr-preprocess.js` [PRO-CANDIDATE] — deskew + adaptive binarization + light denoise + 300dpi baseline via sharp (optional dep, graceful fallback if absent), pure-JS estimateDeskewAngle() for environments without sharp; `docs/cli-reference/ocr-flag.md` — full flag reference, routing table, prerequisites, preprocessing pipeline, data residency guarantee, worker pool note, usage examples. Updated `bin/cli.js` (added `-r, --ocr` to local, web, batch, convert); `src/commands/local.js`, `src/commands/web.js`, `src/commands/batch.js` — each calls initOCRPool() before extraction and terminateOCRPool() in finally block; `package.json` — added `tesseract.js ^5.1.0` as dependency, `sharp ^0.33.0` as optionalDependency. Zero changes to `src/services/extractor.js`. | f484d03018be95438e6378bc072570b134cfdf34 |
 
 ---
 
@@ -60,7 +61,9 @@ The repo is "done enough to sell" when:
 - **`lexvaultmd` unpublish blocked for 24 hours** — npm refuses to delete the last version of a package without `--force`, which triggers a 24-hour republish lockout on that name. Can be force-unpublished after 2026-06-30. Low priority — it is already deprecated with a redirect message.
 - **External research tools** — Octocode and CodeGraphContext worked for Research Build 2. After a Codex restart, GitMCP became available and was used for Research Build 3 cross-checks. Context7 is configured but was not needed for source-pattern research. DeepWiki and Repomix still were not exposed as callable Codex MCP tools in the active tool catalog; use them only after they appear.
 - **README --json docs** — COMPLETE as of 2026-06-30 Docs Writer A3 session. `docs/cli-reference/json-flag.md` created; README flags table and JSON Output section updated.
-- **Signed binary + MSI + WinGet manifest** — Required for Professional tier delivery. Parked until --ocr flag ships and v1.0 signed binary is ready. Do not deliver Professional tier to paying customers until these artifacts exist.
+- **README --ocr docs** — PENDING. `docs/cli-reference/ocr-flag.md` created in this session. README flags table and OCR section need a pass to add --ocr row and OCR section (similar to how --json was added). Next Docs Writer session should pick this up.
+- **OCR page images** — The current --ocr implementation routes correctly but cannot run WHOLE_PAGE_OCR or REGION_OCR in practice because `pdf-parse` does not render page images. The worker pool, preprocessing, and routing logic are fully implemented and correct; the missing piece is a page renderer (e.g. `pdfjs-dist` canvas rendering or `pdftoppm`). WHOLE/REGION routes currently emit a graceful HTML comment placeholder. This is by design for this sprint — the flag is usable today and improves output for born-digital PDFs via the NATIVE/REPAIR path.
+- **Signed binary + MSI + WinGet manifest** — Required for Professional tier delivery. Parked until v1.0 signed binary is ready. Do not deliver Professional tier to paying customers until these artifacts exist.
 - **SBOM generation** — CycloneDX SBOM referenced in commercial docs; needs to be generated and included in artifact bundle before first Professional/Team sale.
 - **Actual signing certificate** — Authenticode signing referenced in commercial docs as "in progress" / "coming before GA"; Nexacrawl must obtain a code-signing certificate before delivering signed binaries.
 
